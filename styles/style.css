@@ -31,3 +31,11 @@ footer {
 .grey-font {
   color: #EAEAEA;
 }
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

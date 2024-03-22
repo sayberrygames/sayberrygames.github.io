@@ -27,3 +27,7 @@ footer {
   display: flex;
   align-items: center;
 }
+
+a .white {
+  color: white;
+}

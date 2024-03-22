@@ -33,6 +33,7 @@ github_username:  jekyll
 theme: minima
 plugins:
   - jekyll-feed
+asset_url: /assets
 
 categories: [Notice, CodenameWS]
 

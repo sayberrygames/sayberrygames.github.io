@@ -37,6 +37,10 @@ a:hover {
   text-decoration: underline !important;
 }
 
+p {
+    font-size: 10pt;
+}
+
 #top-menu {
   width: 1920px;
   height: 80px;

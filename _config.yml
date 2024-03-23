@@ -34,8 +34,9 @@ theme: minima
 plugins:
   - jekyll-feed
 asset_url: /assets
+image_url: /images
 
-categories: [Notice, CodenameWS]
+categories: [Notice, ChaosBringer]
 
 # Exclude from processing.
 # The following items will not be processed, by default.

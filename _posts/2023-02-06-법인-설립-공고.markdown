@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "법인 설립 공고"
-date:   2023-02-06 13:05:00 +0900
+date:   2023-02-06 13:05:00
 categories: Notice
 ---
 

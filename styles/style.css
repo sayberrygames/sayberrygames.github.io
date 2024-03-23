@@ -79,12 +79,22 @@ p {
   color:#727272;
 }
 
+#sb-nav .nav-link:hover {
+  color:#5D59FF;
+  text-decoration: none !important;
+  font-weight: bold;
+}
+
 #sb-nav .active {
   color: #5D59FF;
   background-color: #FFFFFF;
   border-radius: 0;
   border-bottom: solid;
   border-color: #D3D3D3;
+}
+
+#sb-nav .active:hover {
+  font-weight: normal;
 }
 
 #top-menu {

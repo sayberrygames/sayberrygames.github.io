@@ -55,28 +55,35 @@ p {
 
 #sb-nav {
   padding: 0;
-  margin-top: 32px;
+  margin-top: 10px;
 }
 
 #sb-nav header {
   padding-bottom: 0 !important;
+  padding-top: 0 !important;
 }
 
 #sb-nav > header > a {
-  margin: -32px 0 0 16px;
+  /* margin: -32px 0 0 16px; */
+  margin: 0px;
 }
 
 #sb-nav ul {
   margin-bottom: 0px;
+  height: 80px;
+  align-content: end;
 }
 
 #sb-nav li {
   position: relative;
   margin-bottom: 0px;
+  width: 140px;
+  text-align: center;
 }
 
 #sb-nav .nav-link {
   color:#727272;
+  padding-bottom: 16px;
 }
 
 #sb-nav .nav-link:hover {

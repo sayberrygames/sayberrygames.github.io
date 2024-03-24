@@ -1,8 +1,7 @@
 ---
-layout: post
-title:  "이용약관"
-date:   2024-03-22 16:15:00
-categories: Notice
+layout: terms
+title: "이용 약관"
+permalink: /terms
 ---
 
 # 세이베리게임즈 Steam 판매용 패키지 오프라인 게임 약관

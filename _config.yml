@@ -28,6 +28,7 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://www.sayberrygames.com" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: sayberrygames
 github_username:  sayberrygames
+timezone: Asia/Seoul
 
 # Build settings
 theme: minima
@@ -36,7 +37,7 @@ plugins:
 asset_url: /assets
 image_url: /images
 
-categories: [Notice, ChaosBringer]
+categories: [Notice, ChaosBringer, DevLog]
 
 # Exclude from processing.
 # The following items will not be processed, by default.

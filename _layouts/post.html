@@ -2,9 +2,14 @@
 layout: default
 ---
 
-<H2>{{page.title}}</H2>
-<div style="text-align: right">
+<div style="padding: 10px; font-size: 15pt;">{{page.title}}</div>
+
+<div style="padding: 10px; text-align: left; color: #8C8C8C; font-size: 12pt;">
 {{ page.date | date: "%Y-%m-%d" }}
 </div>
+
 <hr>
+
+<div style="padding: 10px; font-size: 12pt;">
 {{content}}
+</div>

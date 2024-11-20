@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -12,20 +12,18 @@ import CorporationNotice from './pages/CorporationNotice';
 export default function App() {
   return (
     <LanguageProvider>
-      <Router basename="/sayberrygames.github.io">
-        <div className="min-h-screen bg-[#0a0a0a] text-white">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/team" element={<Team />} />
-            <Route path="/devnotes" element={<DevNotes />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/corporation-notice" element={<CorporationNotice />} />
-          </Routes>
-          <Footer />
-        </div>
-      </Router>
+      <div className="min-h-screen bg-[#0a0a0a] text-white">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/devnotes" element={<DevNotes />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/corporation-notice" element={<CorporationNotice />} />
+        </Routes>
+        <Footer />
+      </div>
     </LanguageProvider>
   );
 }

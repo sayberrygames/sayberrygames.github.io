@@ -15,6 +15,10 @@ const Footer = () => {
             src="/sayberry-string-logo.png" 
             alt="SayBerry Games"
             className="h-8 mb-4"
+            style={{
+              filter: 'brightness(0) invert(1)',
+              opacity: 0.9
+            }}
           />
           <p className="text-sm text-center text-gray-400 mb-2 flex items-center justify-center">
             <Building2 className="h-4 w-4 mr-2" />

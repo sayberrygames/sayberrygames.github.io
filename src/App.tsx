@@ -9,7 +9,7 @@ import Projects from './pages/Projects';
 import Terms from './pages/Terms';
 import CorporationNotice from './pages/CorporationNotice';
 
-function App() {
+export default function App() {
   return (
     <LanguageProvider>
       <Router basename="/sayberrygames.github.io">
@@ -29,5 +29,3 @@ function App() {
     </LanguageProvider>
   );
 }
-
-export default App;

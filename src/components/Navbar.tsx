@@ -32,7 +32,7 @@ const Navbar = () => {
             <div className="flex-shrink-0">
               <Link to="/">
                 <img 
-                  src="/sayberry-string-logo.svg" 
+                  src="/sayberrygames.github.io/sayberry-string-logo.svg" 
                   alt="SayBerry Games" 
                   className="h-8"
                   style={{

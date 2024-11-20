@@ -6,7 +6,6 @@ import { homeTranslations } from '../translations/home';
 const Home = () => {
   const { language } = useLanguage();
   const content = homeTranslations[language];
-
   return (
     <>
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -20,7 +19,6 @@ const Home = () => {
         >
           <source src="https://video.fastly.steamstatic.com/store_trailers/257068009/movie480_vp9.webm?t=1729960266" type="video/webm" />
         </video>
-
         <div className="relative z-10 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -32,23 +30,18 @@ const Home = () => {
               src="/sayberrygames.github.io/sayberry-square-logo.png"
               alt="SayBerry Games"
               className="h-24 md:h-32 mx-auto mb-4"
-              style={{
-                filter: 'brightness(0) invert(1)',
-                opacity: 0.9
-              }}
             />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-xl md:text-2xl text-gray-300 mb-8"
+            className="text-2xl md:text-3xl text-gray-300 mb-8"
           >
             {content.heroSubtitle}
           </motion.p>
         </div>
       </section>
-
       <section className="py-20 px-4 bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="space-y-8 text-gray-300 max-w-4xl mx-auto">
@@ -58,30 +51,34 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
-                className="text-lg leading-relaxed"
+                className="text-xl md:text-2xl leading-relaxed"
               >
                 {paragraph}
               </motion.p>
             ))}
           </div>
-
-          <div className="mt-16 flex flex-col gap-8 items-center">
+          <div className="mt-16 flex flex-col items-center">
             <div className="w-full">
-              <motion.img
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                src="/sayberrygames.github.io/chaos-bringer-logo.png"
-                alt="Chaos Bringer"
-                className="w-full max-w-lg mx-auto"
-              />
+              <motion.a
+                href="https://store.steampowered.com/app/3119830/Chaos_Bringer/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <motion.img
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                  src="/sayberrygames.github.io/chaos-bringer-logo.png"
+                  alt="Chaos Bringer"
+                  className="w-full max-w-lg mx-auto"
+                />
+              </motion.a>
             </div>
-            <div className="w-full flex justify-center">
+            <div className="w-full flex justify-center mt-2">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
-                className="space-y-6"
               >
                 <a
                   href="https://store.steampowered.com/app/3119830/Chaos_Bringer/"

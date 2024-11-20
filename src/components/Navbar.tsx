@@ -50,7 +50,7 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-lg font-medium transition-colors"
                 >
                   {item.name}
                 </Link>
@@ -59,7 +59,7 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsLangOpen(!isLangOpen)}
-                  className="flex items-center text-gray-300 hover:text-white"
+                  className="flex items-center text-gray-300 hover:text-white text-lg"
                 >
                   <Globe className="h-5 w-5" />
                   <ChevronDown className="ml-1 h-4 w-4" />
@@ -75,7 +75,7 @@ const Navbar = () => {
                             setLanguage(lang.code);
                             setIsLangOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="block w-full text-left px-4 py-2 text-lg text-gray-700 hover:bg-gray-100"
                         >
                           {lang.name}
                         </button>
@@ -109,7 +109,7 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium"
                 onClick={() => setIsOpen(false)}
               >
                 {item.name}
@@ -124,7 +124,7 @@ const Navbar = () => {
                       setLanguage(lang.code);
                       setIsOpen(false);
                     }}
-                    className="text-left text-gray-300 hover:text-white"
+                    className="text-left text-gray-300 hover:text-white text-xl"
                   >
                     {lang.name}
                   </button>

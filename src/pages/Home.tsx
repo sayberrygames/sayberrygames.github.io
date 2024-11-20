@@ -20,7 +20,7 @@ const Home = () => {
         >
           <source src="https://video.fastly.steamstatic.com/store_trailers/257068009/movie480_vp9.webm?t=1729960266" type="video/webm" />
         </video>
-        
+
         <div className="relative z-10 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -28,9 +28,9 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             className="text-5xl md:text-7xl font-bold mb-6"
           >
-            <img 
-              src="/sayberrygames.github.io/sayberry-square-logo.svg" 
-              alt="SayBerry Games" 
+            <img
+              src="/sayberrygames.github.io/sayberry-square-logo.svg"
+              alt="SayBerry Games"
               className="h-24 md:h-32 mx-auto mb-4"
               style={{
                 filter: 'brightness(0) invert(1)',
@@ -65,8 +65,8 @@ const Home = () => {
             ))}
           </div>
 
-          <div className="mt-16 flex flex-col md:flex-row gap-8 items-center">
-            <div className="md:w-1/2">
+          <div className="mt-16 flex flex-col gap-8 items-center">
+            <div className="w-full">
               <motion.img
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -76,7 +76,7 @@ const Home = () => {
                 className="w-full max-w-lg mx-auto"
               />
             </div>
-            <div className="md:w-1/2">
+            <div className="w-full flex justify-center">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}

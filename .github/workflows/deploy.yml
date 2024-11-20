@@ -30,6 +30,9 @@ jobs:
       - name: Build 🔧
         run: npm run build
 
+      - name: Create .nojekyll file 📄
+        run: touch dist/.nojekyll
+
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:

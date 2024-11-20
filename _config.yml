@@ -1,8 +1,0 @@
-title: SayBerry Games
-description: 게임의 새로운 지평을 열다
-baseurl: "/sayberrygames.github.io"
-url: "https://sayberrygames.github.io"
-
-# Build settings
-markdown: kramdown
-theme: jekyll-theme-minimal

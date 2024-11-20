@@ -31,9 +31,9 @@ const Navbar = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Link to="/">
-                <img 
-                  src="/sayberrygames.github.io/sayberry-string-logo.svg" 
-                  alt="SayBerry Games" 
+                <img
+                  src="/sayberrygames.github.io/sayberry-string-logo.png"
+                  alt="SayBerry Games"
                   className="h-8"
                   style={{
                     filter: 'brightness(0) invert(1)',
@@ -43,7 +43,7 @@ const Navbar = () => {
               </Link>
             </div>
           </div>
-          
+
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-8">
               {navigation.map((item) => (
@@ -55,7 +55,7 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              
+
               <div className="relative">
                 <button
                   onClick={() => setIsLangOpen(!isLangOpen)}
@@ -64,7 +64,7 @@ const Navbar = () => {
                   <Globe className="h-5 w-5" />
                   <ChevronDown className="ml-1 h-4 w-4" />
                 </button>
-                
+
                 {isLangOpen && (
                   <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                     <div className="py-1">
@@ -86,7 +86,7 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}

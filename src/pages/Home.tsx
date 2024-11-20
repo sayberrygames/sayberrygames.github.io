@@ -29,7 +29,7 @@ const Home = () => {
             className="text-5xl md:text-7xl font-bold mb-6"
           >
             <img
-              src="/sayberrygames.github.io/sayberry-square-logo.svg"
+              src="/sayberrygames.github.io/sayberry-square-logo.png"
               alt="SayBerry Games"
               className="h-24 md:h-32 mx-auto mb-4"
               style={{

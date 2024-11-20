@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/sayberrygames.github.io/',
+  base: '/',
   optimizeDeps: {
     exclude: ['lucide-react'],
   },

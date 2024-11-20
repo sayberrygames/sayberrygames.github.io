@@ -21,7 +21,7 @@ const Home = () => {
         >
           <source src="https://video.fastly.steamstatic.com/store_trailers/257068009/movie480_vp9.webm?t=1729960266" type="video/webm" />
         </video>
-
+        
         <div className="relative z-10 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -29,9 +29,9 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             className="text-5xl md:text-7xl font-bold mb-6"
           >
-            <img
-              src="/sayberry-square-logo.png" 
-              alt="SayBerry Games"
+            <img 
+              src="/sayberry-square-logo.svg" 
+              alt="SayBerry Games" 
               className="h-24 md:h-32 mx-auto mb-4"
               style={{
                 filter: 'brightness(0) invert(1)',

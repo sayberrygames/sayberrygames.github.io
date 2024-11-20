@@ -12,7 +12,7 @@ import CorporationNotice from './pages/CorporationNotice';
 function App() {
   return (
     <LanguageProvider>
-      <Router>
+      <Router basename="/sayberrygames.github.io">
         <div className="min-h-screen bg-[#0a0a0a] text-white">
           <Navbar />
           <Routes>

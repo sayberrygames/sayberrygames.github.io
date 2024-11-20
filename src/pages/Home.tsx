@@ -9,7 +9,6 @@ const Home = () => {
 
   return (
     <>
-      {/* Hero Section with Video */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <video
           autoPlay
@@ -30,7 +29,7 @@ const Home = () => {
             className="text-5xl md:text-7xl font-bold mb-6"
           >
             <img 
-              src="/sayberry-square-logo.svg" 
+              src="/sayberrygames.github.io/sayberry-square-logo.svg" 
               alt="SayBerry Games" 
               className="h-24 md:h-32 mx-auto mb-4"
               style={{
@@ -50,7 +49,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Game Description Section */}
       <section className="py-20 px-4 bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="space-y-8 text-gray-300 max-w-4xl mx-auto">
@@ -73,7 +71,7 @@ const Home = () => {
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
-                src="/chaos-bringer-logo.png"
+                src="/sayberrygames.github.io/chaos-bringer-logo.png"
                 alt="Chaos Bringer"
                 className="w-full max-w-lg mx-auto"
               />

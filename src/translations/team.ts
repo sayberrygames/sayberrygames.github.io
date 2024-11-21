@@ -24,12 +24,12 @@ export const teamTranslations = {
         description: "스토리텔링과 콘텐츠 기획을 담당하고 있습니다."
       },
       {
-        name: "모카",
+        name: "에이스",
         role: "Lead Programmer",
         description: "게임 엔진 개발과 최적화를 담당하고 있습니다."
       },
       {
-        name: "라떼",
+        name: "알렉스",
         role: "Programmer",
         description: "게임 시스템과 UI 개발을 담당하고 있습니다."
       }
@@ -45,7 +45,7 @@ export const teamTranslations = {
         description: "Oversees all aspects of the project and handles administrative tasks."
       },
       {
-        name: "Cherry.C",
+        name: "Cherish",
         role: "Art Director",
         description: "Leads and defines the visual art direction of our games."
       },
@@ -60,12 +60,12 @@ export const teamTranslations = {
         description: "Creates engaging narratives and designs game content."
       },
       {
-        name: "Mocha",
+        name: "Ace",
         role: "Lead Programmer",
         description: "Leads game engine development and optimization."
       },
       {
-        name: "Latte",
+        name: "Alex",
         role: "Programmer",
         description: "Develops game systems and UI components."
       }
@@ -96,12 +96,12 @@ export const teamTranslations = {
         description: "ストーリーテリングとコンテンツの企画を担当しています。"
       },
       {
-        name: "モカ",
+        name: "エース",
         role: "リードプログラマー",
         description: "ゲームエンジンの開発と最適化を担当しています。"
       },
       {
-        name: "ラテ",
+        name: "アレックス",
         role: "プログラマー",
         description: "ゲームシステムとUI開発を担当しています。"
       }

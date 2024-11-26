@@ -17,7 +17,7 @@ const Home = () => {
           className="absolute w-full h-full object-cover"
           style={{ filter: 'brightness(0.4)' }}
         >
-          <source src="https://video.fastly.steamstatic.com/store_trailers/257068009/movie480_vp9.webm?t=1729960266" type="video/webm" />
+          <source src=https://video.cloudflare.steamstatic.com/store_trailers/257076259/movie_max_vp9.webm?t=1732603340" type="video/webm" />
         </video>
         <div className="relative z-10 text-center">
           <motion.h1

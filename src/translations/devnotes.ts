@@ -5,6 +5,14 @@ export const devNotesTranslations = {
     readMore: 'Steam Community에서 보기',
     posts: [
       {
+        id: 'update-combat',
+        date: "2023-11-24",
+        title: "전투 시스템 대격변: 더 편리하고 전략적인 플레이",
+        content: "이동 알고리즘과 스킬 대상 선택 시스템 개편, 매크로 기능의 추가로 조작 스트레스를 줄였습니다.",
+        steamLink: "https://store.steampowered.com/news/app/3119830/view/4442333105001333132",
+        author: "에이스와 알렉스"
+      },
+      {
         id: 'rtwp-combat',
         date: "2023-11-05",
         title: "카오스브링어의 혁신적인 RTwP 전투 시스템: 턴제와 실시간 전투의 완벽한 균형",
@@ -36,6 +44,14 @@ export const devNotesTranslations = {
     readMore: 'View on Steam Community',
     posts: [
       {
+        id: "update-combat",
+        date: "2023-11-24",
+        title: "Major Combat System Overhaul: More Convenient and Strategic Gameplay",
+        content: "Reduced control stress with revamped movement algorithms, skill targeting system, and added macro functionality.",
+        steamLink: "https://store.steampowered.com/news/app/3119830/view/4442333105001333132",
+        author: "Ace and Alex"
+      },
+      {
         id: 'rtwp-combat',
         date: "2023-11-05",
         title: "Innovative Combat System: The Perfect Balance Between Turn-Based and Real-Time",
@@ -66,6 +82,14 @@ export const devNotesTranslations = {
     subtitle: 'ゲーム開発の進捗状況をお届けします',
     readMore: 'Steamコミュニティで見る',
     posts: [
+      {
+        id: "update-combat",
+        date: "2023-11-24",
+        title: "戦闘システムの大改革: より快適で戦略的なプレイ",
+        content: "移動アルゴリズムとスキルターゲット選択システムの刷新、マクロ機能の追加により操作ストレスを軽減しました。",
+        steamLink: "https://store.steampowered.com/news/app/3119830/view/4442333105001333132",
+        author: "エースとアレックス"
+      },
       {
         id: 'rtwp-combat',
         date: "2023-11-05",

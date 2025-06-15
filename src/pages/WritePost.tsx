@@ -244,7 +244,7 @@ const WritePost = () => {
                     onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
                     required
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
-                    pattern="[a-z0-9-]+"
+                    pattern="[a-z0-9\-]+"
                   />
                 </div>
                 <div>

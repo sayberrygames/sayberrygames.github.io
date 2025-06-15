@@ -132,10 +132,25 @@ const WikiEditor = () => {
     if (!user) return;
     
     try {
+      // First, find the team member record for this user
+      const { data: teamMember, error: teamMemberError } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('active', true)
+        .single();
+      
+      if (teamMemberError || !teamMember) {
+        console.log('No team member record found for user');
+        setUserProjects([]);
+        return;
+      }
+      
+      // Then fetch their project assignments
       const { data, error } = await supabase
         .from('team_member_projects')
         .select('project_id')
-        .eq('user_id', user.id);
+        .eq('team_member_id', teamMember.id);
       
       if (error) throw error;
       
@@ -143,6 +158,7 @@ const WikiEditor = () => {
       setUserProjects(projectIds);
     } catch (error) {
       console.error('Error fetching user projects:', error);
+      setUserProjects([]);
     }
   };
 

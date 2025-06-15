@@ -170,10 +170,21 @@ const WikiPage = () => {
     
     // Check if user has access to the project
     if (page.project_id && user) {
+      // First, find the team member record for this user
+      const { data: teamMember } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('active', true)
+        .single();
+      
+      if (!teamMember) return false;
+      
+      // Then check if they're assigned to this project
       const { data } = await supabase
         .from('team_member_projects')
         .select('id')
-        .eq('user_id', user.id)
+        .eq('team_member_id', teamMember.id)
         .eq('project_id', page.project_id)
         .single();
       
@@ -199,10 +210,21 @@ const WikiPage = () => {
     
     // Check if user is in the same project
     if (page.project_id) {
+      // First, find the team member record for this user
+      const { data: teamMember } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('active', true)
+        .single();
+      
+      if (!teamMember) return false;
+      
+      // Then check if they're assigned to this project
       const { data } = await supabase
         .from('team_member_projects')
         .select('id')
-        .eq('user_id', user.id)
+        .eq('team_member_id', teamMember.id)
         .eq('project_id', page.project_id)
         .single();
       

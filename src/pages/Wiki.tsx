@@ -7,7 +7,7 @@ import SEO from '../components/SEO';
 import { 
   BookOpen, Plus, Search, Folder, File, Lock, 
   Users, Home, ChevronRight, Edit, History,
-  Settings
+  Settings, User
 } from 'lucide-react';
 
 interface WikiPage {
@@ -62,7 +62,9 @@ const Wiki = () => {
       private: '비공개',
       lastUpdated: '최종 수정',
       by: '작성자',
-      newPage: '새 페이지 만들기'
+      newPage: '새 페이지 만들기',
+      projects: '프로젝트',
+      settings: '설정'
     },
     en: {
       title: 'Team Wiki',
@@ -79,7 +81,9 @@ const Wiki = () => {
       private: 'Private',
       lastUpdated: 'Last updated',
       by: 'by',
-      newPage: 'Create New Page'
+      newPage: 'Create New Page',
+      projects: 'Projects',
+      settings: 'Settings'
     },
     ja: {
       title: 'チームWiki',
@@ -96,7 +100,9 @@ const Wiki = () => {
       private: '非公開',
       lastUpdated: '最終更新',
       by: '作成者',
-      newPage: '新しいページを作成'
+      newPage: '新しいページを作成',
+      projects: 'プロジェクト',
+      settings: '設定'
     }
   };
 
@@ -121,10 +127,25 @@ const Wiki = () => {
     if (!user) return;
     
     try {
+      // First, find the team member record for this user
+      const { data: teamMember, error: teamMemberError } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('active', true)
+        .single();
+      
+      if (teamMemberError || !teamMember) {
+        console.log('No team member record found for user');
+        setUserProjects([]);
+        return;
+      }
+      
+      // Then fetch their project assignments
       const { data, error } = await supabase
         .from('team_member_projects')
         .select('project_id')
-        .eq('user_id', user.id);
+        .eq('team_member_id', teamMember.id);
       
       if (error) throw error;
       
@@ -132,6 +153,7 @@ const Wiki = () => {
       setUserProjects(projectIds);
     } catch (error) {
       console.error('Error fetching user projects:', error);
+      setUserProjects([]);
     }
   };
 
@@ -302,7 +324,7 @@ const Wiki = () => {
 
           {/* Project filter */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">프로젝트</h3>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">{t.projects}</h3>
             <div className="space-y-1">
               <button
                 onClick={() => setSelectedProject(null)}
@@ -353,7 +375,7 @@ const Wiki = () => {
                 className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors"
               >
                 <Settings className="h-5 w-5" />
-                설정
+                {t.settings}
               </Link>
             )}
           </div>

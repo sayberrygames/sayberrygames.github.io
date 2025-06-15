@@ -156,6 +156,9 @@ const EditPost = () => {
       
       if (data) {
         console.log('EditPost: Loaded post data:', data);
+        console.log('EditPost: Post author:', data.author);
+        console.log('EditPost: Current user email:', user?.email);
+        console.log('EditPost: Is admin:', isAdmin);
         setFormData({
           ...data,
           tags: data.tags || [],
@@ -285,15 +288,36 @@ const EditPost = () => {
     setLoading(true);
     try {
       console.log('EditPost: Deleting post with ID:', id);
+      console.log('EditPost: Post type:', postType);
+      console.log('EditPost: Current user:', user?.email);
+      console.log('EditPost: User role:', userRole);
+      console.log('EditPost: Is admin:', isAdmin);
+      console.log('EditPost: Post author:', originalAuthor);
       
-      const { error } = await supabase
+      // For admin users, we might need to use service role key
+      // But for now, let's try with the current session
+      const { data, error, count } = await supabase
         .from(postType)
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
+        
+      console.log('EditPost: Delete response - data:', data, 'error:', error, 'count:', count);
         
       if (error) {
-        console.error('EditPost: Delete error:', error);
+        console.error('EditPost: Delete error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.warn('EditPost: Delete returned no data - post may not have been deleted due to RLS policies');
+        setError('삭제 권한이 없거나 RLS 정책에 의해 삭제가 제한되었습니다.');
+        return;
       }
 
       console.log('EditPost: Post deleted successfully');
@@ -405,7 +429,7 @@ const EditPost = () => {
                   <label className="block text-sm font-medium mb-2">{t.featuredImage}</label>
                   <input
                     type="url"
-                    value={formData.featured_image}
+                    value={formData.featured_image || ''}
                     onChange={(e) => handleChange('featured_image', e.target.value)}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
                   />
@@ -414,7 +438,7 @@ const EditPost = () => {
                   <label className="block text-sm font-medium mb-2">{t.steamLink}</label>
                   <input
                     type="url"
-                    value={formData.steam_link}
+                    value={formData.steam_link || ''}
                     onChange={(e) => handleChange('steam_link', e.target.value)}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
                   />
@@ -496,7 +520,7 @@ const EditPost = () => {
                 <label className="block text-sm font-medium mb-2">{t.titleLabel} *</label>
                 <input
                   type="text"
-                  value={formData[`title_${activeTab}`]}
+                  value={formData[`title_${activeTab}`] || ''}
                   onChange={(e) => handleChange(`title_${activeTab}`, e.target.value)}
                   required
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
@@ -507,7 +531,7 @@ const EditPost = () => {
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">{t.excerptLabel}</label>
                 <textarea
-                  value={formData[`excerpt_${activeTab}`]}
+                  value={formData[`excerpt_${activeTab}`] || ''}
                   onChange={(e) => handleChange(`excerpt_${activeTab}`, e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"

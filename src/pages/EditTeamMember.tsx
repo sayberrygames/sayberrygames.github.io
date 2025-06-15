@@ -8,20 +8,18 @@ import { Save, X, AlertCircle, User, Calendar, Image, Link as LinkIcon } from 'l
 
 interface TeamMember {
   id: string;
-  name_ko: string;
-  name_en: string;
-  name_ja: string;
+  name: string;
   role_ko: string;
   role_en: string;
   role_ja: string;
-  bio_ko: string;
-  bio_en: string;
-  bio_ja: string;
-  profile_image: string;
-  social_links: any;
+  description_ko: string;
+  description_en: string;
+  description_ja: string;
+  avatar_url: string;
   sort_order: number;
   active: boolean;
-  joined_date: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const EditTeamMember = () => {
@@ -41,88 +39,61 @@ const EditTeamMember = () => {
       title: '팀원 수정',
       name: '이름',
       role: '역할',
-      bio: '소개',
+      description: '소개',
       profileImage: '프로필 이미지',
-      socialLinks: '소셜 링크',
       sortOrder: '정렬 순서',
       active: '활성',
-      joinedDate: '입사일',
       save: '저장',
       cancel: '취소',
       saveError: '저장 중 오류가 발생했습니다.',
       loadError: '팀원 정보를 불러오는 중 오류가 발생했습니다.',
       unauthorized: '관리자 권한이 필요합니다.',
-      github: 'GitHub',
-      twitter: 'Twitter',
-      linkedin: 'LinkedIn',
-      website: '웹사이트',
-      nameKo: '한국어 이름',
-      nameEn: '영어 이름',
-      nameJa: '일본어 이름',
       roleKo: '한국어 역할',
       roleEn: '영어 역할',
       roleJa: '일본어 역할',
-      bioKo: '한국어 소개',
-      bioEn: '영어 소개',
-      bioJa: '일본어 소개'
+      descriptionKo: '한국어 소개',
+      descriptionEn: '영어 소개',
+      descriptionJa: '일본어 소개'
     },
     en: {
       title: 'Edit Team Member',
       name: 'Name',
       role: 'Role',
-      bio: 'Bio',
+      description: 'Description',
       profileImage: 'Profile Image',
-      socialLinks: 'Social Links',
       sortOrder: 'Sort Order',
       active: 'Active',
-      joinedDate: 'Joined Date',
       save: 'Save',
       cancel: 'Cancel',
       saveError: 'Error saving changes.',
       loadError: 'Error loading team member.',
       unauthorized: 'Admin access required.',
-      github: 'GitHub',
-      twitter: 'Twitter',
-      linkedin: 'LinkedIn',
-      website: 'Website',
-      nameKo: 'Korean Name',
-      nameEn: 'English Name',
-      nameJa: 'Japanese Name',
       roleKo: 'Korean Role',
       roleEn: 'English Role',
       roleJa: 'Japanese Role',
-      bioKo: 'Korean Bio',
-      bioEn: 'English Bio',
-      bioJa: 'Japanese Bio'
+      descriptionKo: 'Korean Description',
+      descriptionEn: 'English Description',
+      descriptionJa: 'Japanese Description'
     },
     ja: {
       title: 'チームメンバー編集',
       name: '名前',
       role: '役割',
-      bio: '紹介',
+      description: '紹介',
       profileImage: 'プロフィール画像',
-      socialLinks: 'ソーシャルリンク',
       sortOrder: 'ソート順',
       active: 'アクティブ',
-      joinedDate: '入社日',
       save: '保存',
       cancel: 'キャンセル',
       saveError: '保存中にエラーが発生しました。',
       loadError: 'チームメンバーの読み込み中にエラーが発生しました。',
       unauthorized: '管理者権限が必要です。',
-      github: 'GitHub',
-      twitter: 'Twitter',
-      linkedin: 'LinkedIn',
-      website: 'ウェブサイト',
-      nameKo: '韓国語名',
-      nameEn: '英語名',
-      nameJa: '日本語名',
       roleKo: '韓国語役割',
       roleEn: '英語役割',
       roleJa: '日本語役割',
-      bioKo: '韓国語紹介',
-      bioEn: '英語紹介',
-      bioJa: '日本語紹介'
+      descriptionKo: '韓国語紹介',
+      descriptionEn: '英語紹介',
+      descriptionJa: '日本語紹介'
     }
   };
 
@@ -188,15 +159,6 @@ const EditTeamMember = () => {
     }));
   };
 
-  const handleSocialLinkChange = (platform: string, url: string) => {
-    setFormData(prev => ({
-      ...prev,
-      social_links: {
-        ...prev.social_links,
-        [platform]: url
-      }
-    }));
-  };
 
   if (loading) {
     return (
@@ -240,15 +202,15 @@ const EditTeamMember = () => {
             <div className="bg-gray-900 rounded-lg p-6">
               <div className="flex items-center gap-6">
                 <div>
-                  {formData.profile_image ? (
+                  {formData.avatar_url ? (
                     <img
-                      src={formData.profile_image}
+                      src={formData.avatar_url}
                       alt="Profile"
                       className="w-24 h-24 rounded-full object-cover"
                     />
                   ) : (
                     <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl font-bold">
-                      {formData.name_ko?.charAt(0) || 'A'}
+                      {formData.name?.charAt(0) || 'A'}
                     </div>
                   )}
                 </div>
@@ -259,8 +221,8 @@ const EditTeamMember = () => {
                   </label>
                   <input
                     type="url"
-                    value={formData.profile_image || ''}
-                    onChange={(e) => handleInputChange('profile_image', e.target.value)}
+                    value={formData.avatar_url || ''}
+                    onChange={(e) => handleInputChange('avatar_url', e.target.value)}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
                     placeholder="https://example.com/image.jpg"
                   />
@@ -268,40 +230,18 @@ const EditTeamMember = () => {
               </div>
             </div>
 
-            {/* Names */}
+            {/* Name */}
             <div className="bg-gray-900 rounded-lg p-6">
               <h3 className="text-xl font-bold mb-4">{t.name}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t.nameKo}</label>
-                  <input
-                    type="text"
-                    value={formData.name_ko || ''}
-                    onChange={(e) => handleInputChange('name_ko', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t.nameEn}</label>
-                  <input
-                    type="text"
-                    value={formData.name_en || ''}
-                    onChange={(e) => handleInputChange('name_en', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t.nameJa}</label>
-                  <input
-                    type="text"
-                    value={formData.name_ja || ''}
-                    onChange={(e) => handleInputChange('name_ja', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                    required
-                  />
-                </div>
+              <div>
+                <input
+                  type="text"
+                  value={formData.name || ''}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
+                  placeholder="베리"
+                  required
+                />
               </div>
             </div>
 
@@ -342,85 +282,35 @@ const EditTeamMember = () => {
               </div>
             </div>
 
-            {/* Bios */}
+            {/* Descriptions */}
             <div className="bg-gray-900 rounded-lg p-6">
-              <h3 className="text-xl font-bold mb-4">{t.bio}</h3>
+              <h3 className="text-xl font-bold mb-4">{t.description}</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">{t.bioKo}</label>
+                  <label className="block text-sm font-medium mb-2">{t.descriptionKo}</label>
                   <textarea
-                    value={formData.bio_ko || ''}
-                    onChange={(e) => handleInputChange('bio_ko', e.target.value)}
+                    value={formData.description_ko || ''}
+                    onChange={(e) => handleInputChange('description_ko', e.target.value)}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
                     rows={3}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">{t.bioEn}</label>
+                  <label className="block text-sm font-medium mb-2">{t.descriptionEn}</label>
                   <textarea
-                    value={formData.bio_en || ''}
-                    onChange={(e) => handleInputChange('bio_en', e.target.value)}
+                    value={formData.description_en || ''}
+                    onChange={(e) => handleInputChange('description_en', e.target.value)}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
                     rows={3}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">{t.bioJa}</label>
+                  <label className="block text-sm font-medium mb-2">{t.descriptionJa}</label>
                   <textarea
-                    value={formData.bio_ja || ''}
-                    onChange={(e) => handleInputChange('bio_ja', e.target.value)}
+                    value={formData.description_ja || ''}
+                    onChange={(e) => handleInputChange('description_ja', e.target.value)}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
                     rows={3}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="bg-gray-900 rounded-lg p-6">
-              <h3 className="text-xl font-bold mb-4">
-                <LinkIcon className="inline h-5 w-5 mr-2" />
-                {t.socialLinks}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t.github}</label>
-                  <input
-                    type="url"
-                    value={formData.social_links?.github || ''}
-                    onChange={(e) => handleSocialLinkChange('github', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                    placeholder="https://github.com/username"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t.twitter}</label>
-                  <input
-                    type="url"
-                    value={formData.social_links?.twitter || ''}
-                    onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                    placeholder="https://twitter.com/username"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t.linkedin}</label>
-                  <input
-                    type="url"
-                    value={formData.social_links?.linkedin || ''}
-                    onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                    placeholder="https://linkedin.com/in/username"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t.website}</label>
-                  <input
-                    type="url"
-                    value={formData.social_links?.website || ''}
-                    onChange={(e) => handleSocialLinkChange('website', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                    placeholder="https://example.com"
                   />
                 </div>
               </div>
@@ -429,25 +319,13 @@ const EditTeamMember = () => {
             {/* Other Settings */}
             <div className="bg-gray-900 rounded-lg p-6">
               <h3 className="text-xl font-bold mb-4">설정</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">{t.sortOrder}</label>
                   <input
                     type="number"
                     value={formData.sort_order || 0}
                     onChange={(e) => handleInputChange('sort_order', parseInt(e.target.value))}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    <Calendar className="inline h-4 w-4 mr-2" />
-                    {t.joinedDate}
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.joined_date || ''}
-                    onChange={(e) => handleInputChange('joined_date', e.target.value)}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
                   />
                 </div>

@@ -12,7 +12,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="border-t border-gray-800 flex flex-col items-center pt-8">
           <img
-            src="/sayberrygames.github.io/sayberry-string-logo.png"
+            src="/sayberry-string-logo.png"
             alt="SayBerry Games"
             className="h-8 mb-4"
             style={{

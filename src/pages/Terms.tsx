@@ -1,8 +1,19 @@
 import { motion } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
+import { commonTranslations } from '../translations/common';
+import SEO from '../components/SEO';
 
 const Terms = () => {
+  const { language } = useLanguage();
+  const content = commonTranslations[language];
+  
   return (
-    <div className="pt-20 pb-16 bg-gray-900">
+    <>
+      <SEO 
+        title={content.footer.terms + ' | SayBerry Games'}
+        description={language === 'ko' ? '세이베리게임즈 Steam 판매용 패키지 오프라인 게임 약관' : language === 'ja' ? 'SayBerry GamesのSteamオフラインゲーム利用規約' : 'SayBerry Games Steam Offline Game Terms of Service'}
+      />
+      <div className="pt-20 pb-16 bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -92,6 +103,7 @@ const Terms = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 

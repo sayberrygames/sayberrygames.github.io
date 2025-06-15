@@ -4,6 +4,7 @@ export const commonTranslations = {
       home: '홈',
       team: '팀 소개',
       devNotes: '개발노트',
+      news: '뉴스',
       projects: '프로젝트'
     },
     footer: {
@@ -18,6 +19,7 @@ export const commonTranslations = {
       home: 'Home',
       team: 'Team',
       devNotes: 'Dev Notes',
+      news: 'News',
       projects: 'Projects'
     },
     footer: {
@@ -32,6 +34,7 @@ export const commonTranslations = {
       home: 'ホーム',
       team: 'チーム',
       devNotes: '開発ノート',
+      news: 'ニュース',
       projects: 'プロジェクト'
     },
     footer: {

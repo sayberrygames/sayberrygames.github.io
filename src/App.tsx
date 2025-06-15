@@ -18,6 +18,8 @@ const WritePost = lazy(() => import('./pages/WritePost'));
 const News = lazy(() => import('./pages/News'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const EditPost = lazy(() => import('./pages/EditPost'));
+const Profile = lazy(() => import('./pages/Profile'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 
 // Loading component
 const PageLoader = () => (
@@ -46,6 +48,8 @@ export default function App() {
               <Route path="/edit/:id" element={<EditPost />} />
               <Route path="/news" element={<News />} />
               <Route path="/news/:slug" element={<NewsDetail />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
           </Suspense>
           <Footer />

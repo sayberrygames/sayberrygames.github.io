@@ -94,9 +94,12 @@ const Navbar = () => {
                 <div className="flex items-center space-x-4">
                   <Link
                     to="/profile"
-                    className="text-gray-300 hover:text-white"
+                    className="flex items-center space-x-2 text-gray-300 hover:text-white"
                   >
                     <User className="h-5 w-5" />
+                    <span className="text-sm">
+                      {user.user_metadata?.name || user.email?.split('@')[0]}
+                    </span>
                   </Link>
                   <button
                     onClick={async () => {
@@ -148,6 +151,49 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Mobile auth section */}
+            {user ? (
+              <div className="border-t border-gray-700 pt-4 mt-4">
+                <Link
+                  to="/profile"
+                  className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <User className="h-5 w-5" />
+                    <span>{user.user_metadata?.name || user.email?.split('@')[0]}</span>
+                  </div>
+                </Link>
+                <button
+                  onClick={async () => {
+                    await signOut();
+                    navigate('/');
+                    setIsOpen(false);
+                  }}
+                  className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium w-full text-left"
+                >
+                  <div className="flex items-center space-x-2">
+                    <LogOut className="h-5 w-5" />
+                    <span>{language === 'ko' ? '로그아웃' : language === 'ja' ? 'ログアウト' : 'Logout'}</span>
+                  </div>
+                </button>
+              </div>
+            ) : (
+              <div className="border-t border-gray-700 pt-4 mt-4">
+                <Link
+                  to="/login"
+                  className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <LogIn className="h-5 w-5" />
+                    <span>{language === 'ko' ? '로그인' : language === 'ja' ? 'ログイン' : 'Login'}</span>
+                  </div>
+                </Link>
+              </div>
+            )}
+            
             <div className="px-3 py-2">
               <div className="flex flex-col space-y-2">
                 {languages.map((lang) => (

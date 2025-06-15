@@ -6,7 +6,8 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Supabase configuration missing:', {
     url: !!supabaseUrl,
-    key: !!supabaseAnonKey
+    key: !!supabaseAnonKey,
+    env: import.meta.env
   });
   throw new Error('Missing Supabase environment variables. Please check your .env file or GitHub secrets.');
 }

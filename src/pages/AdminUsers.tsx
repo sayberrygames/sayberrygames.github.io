@@ -116,22 +116,9 @@ const AdminUsers = () => {
         }
       });
 
-      // If Edge Function fails, show warning
+      // If Edge Function fails, throw error
       if (!response.ok) {
-        console.warn('Edge Function not deployed. For production, deploy the admin-users function.');
-        
-        // For development only - DO NOT USE IN PRODUCTION
-        if (import.meta.env.DEV && import.meta.env.SUPABASE_SERVICE_KEY) {
-          console.warn('Using service key in development mode only!');
-          response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users`, {
-            headers: {
-              'Authorization': `Bearer ${import.meta.env.SUPABASE_SERVICE_KEY}`,
-              'apikey': import.meta.env.SUPABASE_SERVICE_KEY
-            }
-          });
-        } else {
-          throw new Error('Admin users function not available');
-        }
+        throw new Error('Admin users function not available. Please ensure the Edge Function is deployed.');
       }
 
       if (!response.ok) {

@@ -294,26 +294,7 @@ const EditPost = () => {
       console.log('EditPost: Is admin:', isAdmin);
       console.log('EditPost: Post author:', originalAuthor);
       
-      // For news table, use soft delete by setting published to false
-      // This is a workaround for RLS delete policies
-      if (postType === 'news') {
-        const { data, error } = await supabase
-          .from('news')
-          .update({ published: false })
-          .eq('id', id)
-          .select();
-          
-        console.log('EditPost: Soft delete response - data:', data, 'error:', error);
-        
-        if (error) throw error;
-        if (data && data.length > 0) {
-          console.log('EditPost: News post unpublished successfully');
-          navigate('/news');
-          return;
-        }
-      }
-      
-      // For other tables, try regular delete
+      // Delete the post
       const { data, error, count } = await supabase
         .from(postType)
         .delete()

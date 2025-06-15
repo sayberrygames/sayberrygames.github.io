@@ -54,35 +54,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    try {
-      // Get user profile from database
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (profile) {
-        setUserRole(profile.role as 'admin' | 'lead' | 'member' | 'user');
-        setIsAdmin(profile.role === 'admin');
-        setIsTeamMember(['admin', 'lead', 'member'].includes(profile.role));
-      } else {
-        // Fallback for initial setup
-        if (user.email === 'sayberrygames@gmail.com') {
-          setUserRole('admin');
-          setIsAdmin(true);
-          setIsTeamMember(true);
-        } else {
-          setUserRole('user');
-          setIsAdmin(false);
-          setIsTeamMember(false);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking user role:', error);
-      setUserRole('user');
-      setIsAdmin(false);
-      setIsTeamMember(false);
+    // Check user_metadata first (set via Auth)
+    const role = user.user_metadata?.role || 'user';
+    
+    setUserRole(role as 'admin' | 'lead' | 'member' | 'user');
+    setIsAdmin(role === 'admin');
+    setIsTeamMember(['admin', 'lead', 'member'].includes(role));
+    
+    // Special case for initial admin setup
+    if (user.email === 'sayberrygames@gmail.com' && role === 'user') {
+      setUserRole('admin');
+      setIsAdmin(true);
+      setIsTeamMember(true);
     }
   };
 

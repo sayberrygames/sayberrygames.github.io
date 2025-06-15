@@ -20,6 +20,10 @@ const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const EditPost = lazy(() => import('./pages/EditPost'));
 const Profile = lazy(() => import('./pages/Profile'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const AdminUsers = lazy(() => import('./pages/AdminUsers'));
+const Wiki = lazy(() => import('./pages/Wiki'));
+const WikiPage = lazy(() => import('./pages/WikiPage'));
+const WikiEditor = lazy(() => import('./pages/WikiEditor'));
 
 // Loading component
 const PageLoader = () => (
@@ -50,6 +54,11 @@ export default function App() {
               <Route path="/news/:slug" element={<NewsDetail />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/wiki" element={<Wiki />} />
+              <Route path="/wiki/new" element={<WikiEditor />} />
+              <Route path="/wiki/edit/:slug" element={<WikiEditor />} />
+              <Route path="/wiki/:slug" element={<WikiPage />} />
             </Routes>
           </Suspense>
           <Footer />

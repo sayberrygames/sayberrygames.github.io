@@ -253,10 +253,15 @@ const EditPost = () => {
         ? formData.tags.join(',').split(',').map(tag => tag.trim()).filter(Boolean)
         : [];
 
+      // Remove id from the update data as it's not needed
+      const { id: _, ...dataWithoutId } = formData;
       const dataToUpdate = {
-        ...formData,
+        ...dataWithoutId,
         tags: tagsArray,
       };
+
+      console.log('EditPost: Updating post with ID:', id);
+      console.log('EditPost: Update data:', dataToUpdate);
 
       const { error } = await supabase
         .from(postType)
@@ -279,13 +284,19 @@ const EditPost = () => {
 
     setLoading(true);
     try {
+      console.log('EditPost: Deleting post with ID:', id);
+      
       const { error } = await supabase
         .from(postType)
         .delete()
         .eq('id', id);
         
-      if (error) throw error;
+      if (error) {
+        console.error('EditPost: Delete error:', error);
+        throw error;
+      }
 
+      console.log('EditPost: Post deleted successfully');
       navigate(postType === 'news' ? '/news' : '/devnotes');
     } catch (err) {
       console.error('Error deleting post:', err);

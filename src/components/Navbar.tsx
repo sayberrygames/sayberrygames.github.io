@@ -1,4 +1,4 @@
-import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User, BookOpen, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -9,7 +9,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isTeamMember, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const languages = [
@@ -89,6 +89,28 @@ const Navbar = () => {
                 )}
               </div>
 
+              {/* Team member links */}
+              {isTeamMember && (
+                <>
+                  <Link
+                    to="/wiki"
+                    className="flex items-center gap-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-lg font-medium transition-colors"
+                  >
+                    <BookOpen className="h-5 w-5" />
+                    <span>{language === 'ko' ? '위키' : language === 'ja' ? 'Wiki' : 'Wiki'}</span>
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin/users"
+                      className="flex items-center gap-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-lg font-medium transition-colors"
+                    >
+                      <Shield className="h-5 w-5" />
+                      <span>{language === 'ko' ? '관리' : language === 'ja' ? '管理' : 'Admin'}</span>
+                    </Link>
+                  )}
+                </>
+              )}
+
               {/* Auth buttons */}
               {user ? (
                 <div className="flex items-center space-x-4">
@@ -151,6 +173,30 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Mobile team member links */}
+            {isTeamMember && (
+              <>
+                <Link
+                  to="/wiki"
+                  className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <BookOpen className="h-5 w-5" />
+                  {language === 'ko' ? '위키' : language === 'ja' ? 'Wiki' : 'Wiki'}
+                </Link>
+                {isAdmin && (
+                  <Link
+                    to="/admin/users"
+                    className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Shield className="h-5 w-5" />
+                    {language === 'ko' ? '관리' : language === 'ja' ? '管理' : 'Admin'}
+                  </Link>
+                )}
+              </>
+            )}
             
             {/* Mobile auth section */}
             {user ? (

@@ -27,3 +27,10 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Setup and SQL files
+*.sql
+setup_*.py
+setup_*.js
+execute_*.js
+execute_*.cjs

@@ -1,8 +1,19 @@
 import { motion } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
+import { commonTranslations } from '../translations/common';
+import SEO from '../components/SEO';
 
 const CorporationNotice = () => {
+  const { language } = useLanguage();
+  const content = commonTranslations[language];
+  
   return (
-    <div className="pt-20 pb-16 bg-gray-900">
+    <>
+      <SEO 
+        title={content.footer.corporationNotice + ' | SayBerry Games'}
+        description={language === 'ko' ? '"세이베리 게임즈 주식회사"는 2023년 01월 31일 설립하였습니다.' : language === 'ja' ? 'セイベリーゲームズ株式会社は2023年1月31日に設立されました。' : 'SayBerry Games Inc. was established on January 31, 2023.'}
+      />
+      <div className="pt-20 pb-16 bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -40,6 +51,7 @@ const CorporationNotice = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 

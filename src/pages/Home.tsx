@@ -2,12 +2,14 @@ import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { homeTranslations } from '../translations/home';
+import SEO from '../components/SEO';
 
 const Home = () => {
   const { language } = useLanguage();
   const content = homeTranslations[language];
   return (
     <>
+      <SEO />
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <video
           autoPlay
@@ -27,7 +29,7 @@ const Home = () => {
             className="text-5xl md:text-7xl font-bold mb-6"
           >
             <img
-              src="/sayberrygames.github.io/sayberry-square-logo.png"
+              src="/sayberry-square-logo.png"
               alt="SayBerry Games"
               className="h-24 md:h-32 mx-auto mb-4"
             />
@@ -68,7 +70,7 @@ const Home = () => {
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6 }}
-                  src="/sayberrygames.github.io/chaos-bringer-logo.png"
+                  src="/chaos-bringer-logo.png"
                   alt="Chaos Bringer"
                   className="w-full max-w-lg mx-auto"
                 />

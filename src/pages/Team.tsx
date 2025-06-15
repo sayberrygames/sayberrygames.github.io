@@ -1,13 +1,19 @@
 import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { teamTranslations } from '../translations/team';
+import SEO from '../components/SEO';
 
 const Team = () => {
   const { language } = useLanguage();
   const content = teamTranslations[language];
 
   return (
-    <div className="pt-20 pb-16 bg-gray-900">
+    <>
+      <SEO 
+        title={content.title + ' | SayBerry Games'}
+        description={content.subtitle}
+      />
+      <div className="pt-20 pb-16 bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,6 +51,7 @@ const Team = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

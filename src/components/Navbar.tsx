@@ -1,13 +1,16 @@
-import { Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import { commonTranslations } from '../translations/common';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const languages = [
     { code: 'ko', name: '한국어' },
@@ -32,7 +35,7 @@ const Navbar = () => {
             <div className="flex-shrink-0">
               <Link to="/">
                 <img
-                  src="/sayberrygames.github.io/sayberry-string-logo.png"
+                  src="/sayberry-string-logo.png"
                   alt="SayBerry Games"
                   className="h-8"
                   style={{
@@ -84,6 +87,35 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+
+              {/* Auth buttons */}
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/profile"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    <User className="h-5 w-5" />
+                  </Link>
+                  <button
+                    onClick={async () => {
+                      await signOut();
+                      navigate('/');
+                    }}
+                    className="flex items-center text-gray-300 hover:text-white"
+                  >
+                    <LogOut className="h-5 w-5" />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center text-gray-300 hover:text-white"
+                >
+                  <LogIn className="h-5 w-5" />
+                  <span className="ml-2">{language === 'ko' ? '로그인' : language === 'ja' ? 'ログイン' : 'Login'}</span>
+                </Link>
+              )}
             </div>
           </div>
 

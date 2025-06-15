@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -104,7 +104,8 @@ const Team = () => {
     return name.charAt(0).toUpperCase();
   };
 
-  const canManageTeam = userRole === 'admin' || userRole === 'lead';
+  const { isAdmin } = useAuth();
+  const canManageTeam = isAdmin;
 
   if (loading) {
     return (
@@ -141,7 +142,14 @@ const Team = () => {
           </div>
 
           {canManageTeam && (
-            <div className="mb-8 flex justify-end">
+            <div className="mb-8 flex justify-end gap-4">
+              <button
+                onClick={() => navigate('/admin/team')}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <Settings className="h-5 w-5" />
+                <span>{language === 'ko' ? '팀관리' : language === 'ja' ? 'チーム管理' : 'Manage Team'}</span>
+              </button>
               <button
                 onClick={() => navigate('/admin/team/new')}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"

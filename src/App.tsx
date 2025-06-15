@@ -22,6 +22,7 @@ const Profile = lazy(() => import('./pages/Profile'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminTeam = lazy(() => import('./pages/AdminTeam'));
+const EditTeamMember = lazy(() => import('./pages/EditTeamMember'));
 const Wiki = lazy(() => import('./pages/Wiki'));
 const WikiPage = lazy(() => import('./pages/WikiPage'));
 const WikiEditor = lazy(() => import('./pages/WikiEditor'));
@@ -57,6 +58,7 @@ export default function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/team" element={<AdminTeam />} />
+              <Route path="/admin/team/edit/:id" element={<EditTeamMember />} />
               <Route path="/wiki" element={<Wiki />} />
               <Route path="/wiki/new" element={<WikiEditor />} />
               <Route path="/wiki/edit/:slug" element={<WikiEditor />} />

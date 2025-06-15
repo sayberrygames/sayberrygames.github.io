@@ -13,7 +13,7 @@ const Projects = lazy(() => import('./pages/Projects'));
 const Terms = lazy(() => import('./pages/Terms'));
 const CorporationNotice = lazy(() => import('./pages/CorporationNotice'));
 const Login = lazy(() => import('./pages/Login'));
-const Signup = lazy(() => import('./pages/Signup'));
+const SignUp = lazy(() => import('./pages/SignUp'));
 const WritePost = lazy(() => import('./pages/WritePost'));
 const News = lazy(() => import('./pages/News'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
@@ -47,7 +47,7 @@ export default function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/corporation-notice" element={<CorporationNotice />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/signup" element={<SignUp />} />
               <Route path="/write" element={<WritePost />} />
               <Route path="/edit/:id" element={<EditPost />} />
               <Route path="/news" element={<News />} />

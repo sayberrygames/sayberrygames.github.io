@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
+import { UserPlus, Mail, Lock, User as UserIcon, AlertCircle } from 'lucide-react';
 
-const Signup = () => {
+const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ const Signup = () => {
     ko: {
       title: '회원가입',
       email: '이메일',
-      username: '사용자명',
+      name: '이름',
       password: '비밀번호',
       confirmPassword: '비밀번호 확인',
       submit: '회원가입',
@@ -32,11 +33,14 @@ const Signup = () => {
         emailExists: '이미 사용 중인 이메일입니다.',
       },
       successMessage: '회원가입이 완료되었습니다! 이메일을 확인해주세요.',
+      emailPlaceholder: 'you@example.com',
+      passwordPlaceholder: '최소 6자 이상',
+      namePlaceholder: '홍길동'
     },
     en: {
       title: 'Sign Up',
       email: 'Email',
-      username: 'Username',
+      name: 'Name',
       password: 'Password',
       confirmPassword: 'Confirm Password',
       submit: 'Sign Up',
@@ -49,11 +53,14 @@ const Signup = () => {
         emailExists: 'Email already in use.',
       },
       successMessage: 'Sign up successful! Please check your email.',
+      emailPlaceholder: 'you@example.com',
+      passwordPlaceholder: 'At least 6 characters',
+      namePlaceholder: 'John Doe'
     },
     ja: {
       title: 'サインアップ',
       email: 'メール',
-      username: 'ユーザー名',
+      name: '名前',
       password: 'パスワード',
       confirmPassword: 'パスワード確認',
       submit: 'サインアップ',
@@ -66,6 +73,9 @@ const Signup = () => {
         emailExists: 'このメールは既に使用されています。',
       },
       successMessage: 'サインアップ成功！メールをご確認ください。',
+      emailPlaceholder: 'you@example.com',
+      passwordPlaceholder: '6文字以上',
+      namePlaceholder: '山田太郎'
     },
   };
 
@@ -95,27 +105,24 @@ const Signup = () => {
         password,
         options: {
           data: {
-            username,
+            name,
+            role: 'user'
           },
+          emailRedirectTo: `${window.location.origin}/login`
         },
       });
 
       if (error) {
+        console.error('Supabase signup error:', error);
         if (error.message.includes('already registered')) {
           setError(t.errors.emailExists);
         } else {
-          setError(t.errors.signupFailed);
+          setError(error.message || t.errors.signupFailed);
         }
         return;
       }
 
       if (data.user) {
-        // Update profile with username
-        await supabase
-          .from('profiles')
-          .update({ username })
-          .eq('id', data.user.id);
-
         setSuccess(true);
         setTimeout(() => {
           navigate('/login');
@@ -132,104 +139,117 @@ const Signup = () => {
   return (
     <>
       <SEO title={t.title + ' | SayBerry Games'} />
-      <div className="min-h-screen flex items-center justify-center px-4 py-12">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-              {t.title}
-            </h2>
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <UserPlus className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold">{t.title}</h1>
+            <p className="text-gray-400 mt-2">SayBerry Games에 오신 것을 환영합니다</p>
           </div>
-          
+
           {success ? (
-            <div className="text-center">
-              <p className="text-green-500 text-lg">{t.successMessage}</p>
+            <div className="bg-gray-900 rounded-lg p-8 text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
+                  <Mail className="h-8 w-8 text-green-500" />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-green-500 mb-4">{t.successMessage}</h2>
+              <p className="text-gray-400 mb-6">
+                가입을 완료하려면 이메일의 인증 링크를 클릭해주세요.
+              </p>
+              <Link to="/login" className="text-blue-400 hover:text-blue-300">
+                {t.login} →
+              </Link>
             </div>
           ) : (
-            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                    {t.email}
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder={t.email}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                    {t.username}
-                  </label>
-                  <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    autoComplete="username"
-                    required
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder={t.username}
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                    {t.password}
-                  </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder={t.password}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
-                    {t.confirmPassword}
-                  </label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder={t.confirmPassword}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="bg-gray-900 rounded-lg p-8 space-y-6">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  <UserIcon className="inline h-4 w-4 mr-2" />
+                  {t.name}
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
+                  placeholder={t.namePlaceholder}
+                  required
+                />
               </div>
 
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  <Mail className="inline h-4 w-4 mr-2" />
+                  {t.email}
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
+                  placeholder={t.emailPlaceholder}
+                  required
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  <Lock className="inline h-4 w-4 mr-2" />
+                  {t.password}
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
+                  placeholder={t.passwordPlaceholder}
+                  required
+                />
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  <Lock className="inline h-4 w-4 mr-2" />
+                  {t.confirmPassword}
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
+                  placeholder={t.passwordPlaceholder}
+                  required
+                />
+              </div>
+
+              {/* Error message */}
               {error && (
-                <div className="text-red-500 text-sm text-center">{error}</div>
+                <div className="p-3 bg-red-900/20 border border-red-500 rounded-md text-red-400 text-sm flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  {error}
+                </div>
               )}
 
-              <div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                  {loading ? '...' : t.submit}
-                </button>
-              </div>
+              {/* Submit button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <UserPlus className="h-5 w-5" />
+                {loading ? '...' : t.submit}
+              </button>
 
-              <div className="text-center">
+              {/* Login link */}
+              <div className="text-center text-sm">
                 <span className="text-gray-400">{t.alreadyHaveAccount}</span>{' '}
-                <Link to="/login" className="text-indigo-400 hover:text-indigo-300">
+                <Link to="/login" className="text-blue-400 hover:text-blue-300">
                   {t.login}
                 </Link>
               </div>
@@ -241,4 +261,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUp;

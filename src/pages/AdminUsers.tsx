@@ -180,24 +180,6 @@ const AdminUsers = () => {
         })
       });
 
-      // If Edge Function fails, use service key in dev mode only
-      if (!response.ok && import.meta.env.DEV && import.meta.env.SUPABASE_SERVICE_KEY) {
-        console.warn('Edge Function not available, using service key in dev mode');
-        response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users/${userId}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.SUPABASE_SERVICE_KEY}`,
-            'apikey': import.meta.env.SUPABASE_SERVICE_KEY,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            user_metadata: {
-              role: editRole,
-              name: editName
-            }
-          })
-        });
-      }
 
       if (!response.ok) {
         const errorText = await response.text();

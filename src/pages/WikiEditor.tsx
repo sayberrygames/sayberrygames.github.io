@@ -134,35 +134,9 @@ const WikiEditor = () => {
   const fetchUserProjects = async () => {
     if (!user) return;
     
-    try {
-      // First, find the team member record for this user
-      const { data: teamMember, error: teamMemberError } = await supabase
-        .from('team_members')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('active', true)
-        .single();
-      
-      if (teamMemberError || !teamMember) {
-        console.log('No team member record found for user');
-        setUserProjects([]);
-        return;
-      }
-      
-      // Then fetch their project assignments
-      const { data, error } = await supabase
-        .from('team_member_projects')
-        .select('project_id')
-        .eq('team_member_id', teamMember.id);
-      
-      if (error) throw error;
-      
-      const projectIds = data?.map(item => item.project_id) || [];
-      setUserProjects(projectIds);
-    } catch (error) {
-      console.error('Error fetching user projects:', error);
-      setUserProjects([]);
-    }
+    // For now, team members can access all projects
+    // TODO: Implement proper project assignment when team_members table is linked to auth users
+    setUserProjects([]);
   };
 
   const fetchProjects = async () => {
@@ -359,9 +333,7 @@ const WikiEditor = () => {
                 className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
               >
                 <option value="">{t.selectProject}</option>
-                {projects
-                  .filter(p => userProjects.includes(p.id))
-                  .map(project => (
+                {projects.map(project => (
                     <option key={project.id} value={project.id}>
                       {getProjectName(project)}
                     </option>

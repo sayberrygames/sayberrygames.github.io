@@ -1,4 +1,4 @@
-import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User, BookOpen, Shield } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User, BookOpen, Shield, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -134,13 +134,22 @@ const Navbar = () => {
                   </button>
                 </div>
               ) : (
-                <Link
-                  to="/login"
-                  className="flex items-center text-gray-300 hover:text-white"
-                >
-                  <LogIn className="h-5 w-5" />
-                  <span className="ml-2">{language === 'ko' ? '로그인' : language === 'ja' ? 'ログイン' : 'Login'}</span>
-                </Link>
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/signup"
+                    className="text-gray-300 hover:text-white"
+                    title={language === 'ko' ? '회원가입' : language === 'ja' ? '新規登録' : 'Sign up'}
+                  >
+                    <UserPlus className="h-5 w-5" />
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="text-gray-300 hover:text-white"
+                    title={language === 'ko' ? '로그인' : language === 'ja' ? 'ログイン' : 'Login'}
+                  >
+                    <LogIn className="h-5 w-5" />
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -227,6 +236,16 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="border-t border-gray-700 pt-4 mt-4">
+                <Link
+                  to="/signup"
+                  className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <UserPlus className="h-5 w-5" />
+                    <span>{language === 'ko' ? '회원가입' : language === 'ja' ? '新規登録' : 'Sign up'}</span>
+                  </div>
+                </Link>
                 <Link
                   to="/login"
                   className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium"

@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useEffect } from 'react';
+import './NotionEditor.css';
 
 interface NotionEditorProps {
   content: string;
@@ -127,75 +128,9 @@ const NotionEditor = ({ content, onChange, placeholder, height = 500 }: NotionEd
           1. List
         </button>
       </div>
-      <div className="overflow-y-auto" style={{ height: `${height - 50}px` }}>
+      <div className="overflow-y-auto" style={{ height: `${height - 50}px`, minHeight: `${height - 50}px` }}>
         <EditorContent editor={editor} />
       </div>
-      <style jsx global>{`
-        .ProseMirror {
-          min-height: ${height - 50}px;
-        }
-        
-        .ProseMirror p.is-editor-empty:first-child::before {
-          content: attr(data-placeholder);
-          float: left;
-          color: #6b7280;
-          pointer-events: none;
-          height: 0;
-        }
-        
-        .ProseMirror:focus {
-          outline: none;
-        }
-        
-        /* Basic typography styles */
-        .ProseMirror h1 {
-          font-size: 2em;
-          font-weight: bold;
-          margin: 0.67em 0;
-        }
-        
-        .ProseMirror h2 {
-          font-size: 1.5em;
-          font-weight: bold;
-          margin: 0.75em 0;
-        }
-        
-        .ProseMirror h3 {
-          font-size: 1.17em;
-          font-weight: bold;
-          margin: 0.83em 0;
-        }
-        
-        .ProseMirror p {
-          margin: 1em 0;
-        }
-        
-        .ProseMirror ul,
-        .ProseMirror ol {
-          padding-left: 2em;
-          margin: 1em 0;
-        }
-        
-        .ProseMirror li {
-          margin: 0.5em 0;
-        }
-        
-        .ProseMirror code {
-          background-color: #374151;
-          padding: 0.2em 0.4em;
-          border-radius: 0.25rem;
-          font-family: monospace;
-          font-size: 0.875em;
-        }
-        
-        .ProseMirror strong {
-          font-weight: bold;
-        }
-        
-        .ProseMirror em {
-          font-style: italic;
-        }
-      `}</style>
     </div>
   );
 };

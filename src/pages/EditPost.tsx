@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
 import MarkdownEditor from '../components/MarkdownEditor';
 import MarkdownViewer from '../components/MarkdownViewer';
-import { Eye, Edit } from 'lucide-react';
+import { Eye, Edit, Trash2 } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -16,10 +16,11 @@ interface Project {
   name_ja: string;
 }
 
-const WritePost = () => {
+const EditPost = () => {
   const { user, isAdmin, isTeamMember, userRole } = useAuth();
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const postType = searchParams.get('type') || 'dev_notes';
 
@@ -28,8 +29,10 @@ const WritePost = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
+  const [originalAuthor, setOriginalAuthor] = useState('');
 
   const [formData, setFormData] = useState({
+    id: '',
     slug: '',
     title_ko: '',
     title_en: '',
@@ -40,9 +43,9 @@ const WritePost = () => {
     content_ko: '',
     content_en: '',
     content_ja: '',
-    date: new Date().toISOString().split('T')[0],
-    category: postType === 'news' ? 'Announcement' : 'Development',
-    author: user?.email?.split('@')[0] || 'SayBerry Games',
+    date: '',
+    category: '',
+    author: '',
     featured_image: '',
     steam_link: '',
     tags: [] as string[],
@@ -52,7 +55,9 @@ const WritePost = () => {
 
   const content = {
     ko: {
-      title: postType === 'news' ? '뉴스 작성' : '개발 노트 작성',
+      title: postType === 'news' ? '뉴스 수정' : '개발 노트 수정',
+      delete: '삭제',
+      deleteConfirm: '정말로 이 게시물을 삭제하시겠습니까?',
       slug: 'URL 슬러그 (영문, 숫자, 하이픈만)',
       titleLabel: '제목',
       excerptLabel: '요약 (선택사항)',
@@ -73,9 +78,12 @@ const WritePost = () => {
       error: '저장에 실패했습니다.',
       unauthorized: '권한이 없습니다.',
       requiredFields: '필수 입력 항목을 모두 작성해주세요.',
+      notFound: '게시물을 찾을 수 없습니다.',
     },
     en: {
-      title: postType === 'news' ? 'Write News' : 'Write Development Note',
+      title: postType === 'news' ? 'Edit News' : 'Edit Development Note',
+      delete: 'Delete',
+      deleteConfirm: 'Are you sure you want to delete this post?',
       slug: 'URL Slug (letters, numbers, hyphens only)',
       titleLabel: 'Title',
       excerptLabel: 'Excerpt (Optional)',
@@ -96,9 +104,12 @@ const WritePost = () => {
       error: 'Failed to save.',
       unauthorized: 'Unauthorized.',
       requiredFields: 'Please fill in all required fields.',
+      notFound: 'Post not found.',
     },
     ja: {
-      title: postType === 'news' ? 'ニュース作成' : '開発ノート作成',
+      title: postType === 'news' ? 'ニュース編集' : '開発ノート編集',
+      delete: '削除',
+      deleteConfirm: '本当にこの投稿を削除しますか？',
       slug: 'URLスラッグ（英数字とハイフンのみ）',
       titleLabel: 'タイトル',
       excerptLabel: '要約（オプション）',
@@ -119,12 +130,44 @@ const WritePost = () => {
       error: '保存に失敗しました。',
       unauthorized: '権限がありません。',
       requiredFields: '必須項目をすべて入力してください。',
+      notFound: '投稿が見つかりません。',
     },
   };
 
+  const t = content[language];
+
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (id) {
+      console.log('EditPost: Loading post with ID:', id);
+      fetchPost();
+      fetchProjects();
+    }
+  }, [id]);
+
+  const fetchPost = async () => {
+    try {
+      const { data, error } = await supabase
+        .from(postType)
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        console.log('EditPost: Loaded post data:', data);
+        setFormData({
+          ...data,
+          tags: data.tags || [],
+        });
+        setOriginalAuthor(data.author);
+        console.log('EditPost: formData after loading:', { ...data, tags: data.tags || [] });
+      }
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      setError(t.notFound);
+    }
+  };
 
   const fetchProjects = async () => {
     try {
@@ -141,36 +184,52 @@ const WritePost = () => {
     }
   };
 
-  const t = content[language];
-
-  // Check permissions based on post type
-  const hasPermission = () => {
+  // Check permissions
+  const canEdit = () => {
     if (!user) return false;
     
-    if (postType === 'dev_notes') {
-      // Dev notes can be written by team members and above
-      return isTeamMember;
-    } else if (postType === 'news') {
-      // News can be written by leads and admins only
-      return userRole === 'admin' || userRole === 'lead';
+    // Admins can edit anything
+    if (isAdmin) return true;
+    
+    // For dev notes, team members can edit their own posts
+    if (postType === 'dev_notes' && isTeamMember) {
+      return originalAuthor === user.email?.split('@')[0] || 
+             originalAuthor === user.user_metadata?.name;
+    }
+    
+    // For news, only leads and admins
+    if (postType === 'news') {
+      return userRole === 'lead';
     }
     
     return false;
   };
 
-  if (!hasPermission()) {
+  const canDelete = () => {
+    // Only admins can delete
+    return isAdmin;
+  };
+
+  if (!canEdit() && formData.id) {
+    console.log('EditPost: Permission check failed', {
+      user: user?.email,
+      isAdmin,
+      isTeamMember,
+      userRole,
+      originalAuthor,
+      formDataId: formData.id,
+      canEdit: canEdit()
+    });
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-500 text-xl mb-4">{t.unauthorized}</p>
-          {!user && (
-            <button
-              onClick={() => navigate('/login')}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
-            >
-              로그인
-            </button>
-          )}
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md text-white"
+          >
+            {t.cancel}
+          </button>
         </div>
       </div>
     );
@@ -194,18 +253,42 @@ const WritePost = () => {
         ? formData.tags.join(',').split(',').map(tag => tag.trim()).filter(Boolean)
         : [];
 
-      const dataToInsert = {
+      const dataToUpdate = {
         ...formData,
         tags: tagsArray,
-        created_by: user.id,
       };
 
-      const { error } = await supabase.from(postType).insert([dataToInsert]);
+      const { error } = await supabase
+        .from(postType)
+        .update(dataToUpdate)
+        .eq('id', id);
+        
       if (error) throw error;
 
       navigate(postType === 'news' ? '/news' : '/devnotes');
     } catch (err) {
-      console.error('Error saving post:', err);
+      console.error('Error updating post:', err);
+      setError(t.error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm(t.deleteConfirm)) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from(postType)
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
+
+      navigate(postType === 'news' ? '/news' : '/devnotes');
+    } catch (err) {
+      console.error('Error deleting post:', err);
       setError(t.error);
     } finally {
       setLoading(false);
@@ -221,14 +304,26 @@ const WritePost = () => {
 
   const categories = postType === 'news' 
     ? ['Announcement', 'Update', 'Event', 'Release', 'Partnership']
-    : ['Development', 'Update', 'Feature', 'Announcement', 'Milestone', 'Technical'];
+    : ['Development', 'Update', 'Feature', 'Announcement', 'Milestone', 'Technical', 'Team'];
 
   return (
     <>
       <SEO title={t.title + ' | SayBerry Games'} />
       <div className="min-h-screen py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8">{t.title}</h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold">{t.title}</h1>
+            {canDelete() && (
+              <button
+                onClick={handleDelete}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md text-white transition-colors disabled:opacity-50"
+              >
+                <Trash2 className="h-5 w-5" />
+                {t.delete}
+              </button>
+            )}
+          </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
@@ -452,4 +547,4 @@ const WritePost = () => {
   );
 };
 
-export default WritePost;
+export default EditPost;

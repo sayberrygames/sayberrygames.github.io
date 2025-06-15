@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Calendar, User, Tag, Plus, Eye } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { ExternalLink, Calendar, User, Tag, Plus, Eye, Edit2 } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { devNotesTranslations } from '../translations/devnotes';
@@ -30,30 +30,77 @@ interface DevNote {
   view_count: number;
   published: boolean;
   created_at: string;
+  project_id: string | null;
+}
+
+interface Project {
+  id: string;
+  slug: string;
+  name_ko: string;
+  name_en: string;
+  name_ja: string;
+  logo_url: string | null;
 }
 
 const DevNotes = () => {
   const { language } = useLanguage();
-  const { isTeamMember } = useAuth();
+  const { user, isTeamMember, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const content = devNotesTranslations[language];
   
   const [notes, setNotes] = useState<DevNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedNote, setSelectedNote] = useState<DevNote | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'detail'>('list');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<string>('all');
 
   useEffect(() => {
+    fetchProjects();
     fetchNotes();
   }, []);
 
-  const fetchNotes = async () => {
+  useEffect(() => {
+    fetchNotes();
+  }, [selectedProject]);
+
+  // Reset to list view when navigating to /devnotes
+  useEffect(() => {
+    if (location.pathname === '/devnotes') {
+      setViewMode('list');
+      setSelectedNote(null);
+    }
+  }, [location]);
+
+  const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order');
+
+      if (error) throw error;
+      setProjects(data || []);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    }
+  };
+
+  const fetchNotes = async () => {
+    try {
+      let query = supabase
         .from('dev_notes')
         .select('*')
         .eq('published', true)
         .order('date', { ascending: false });
+
+      if (selectedProject !== 'all') {
+        query = query.eq('project_id', selectedProject);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setNotes(data || []);
@@ -116,15 +163,27 @@ const DevNotes = () => {
         />
         <section className="py-20 px-4 min-h-screen">
           <div className="max-w-4xl mx-auto">
-            <button
-              onClick={() => {
-                setViewMode('list');
-                setSelectedNote(null);
-              }}
-              className="mb-6 text-gray-400 hover:text-white transition-colors"
-            >
-              ← {language === 'ko' ? '목록으로' : language === 'ja' ? 'リストに戻る' : 'Back to list'}
-            </button>
+            <div className="flex justify-between items-center mb-6">
+              <button
+                onClick={() => {
+                  setViewMode('list');
+                  setSelectedNote(null);
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ← {language === 'ko' ? '목록으로' : language === 'ja' ? 'リストに戻る' : 'Back to list'}
+              </button>
+              
+              {(isAdmin || (isTeamMember && selectedNote.author === user?.email?.split('@')[0])) && (
+                <button
+                  onClick={() => navigate(`/edit/${selectedNote.id}?type=dev_notes`)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
+                >
+                  <Edit2 className="h-4 w-4" />
+                  {language === 'ko' ? '수정' : language === 'ja' ? '編集' : 'Edit'}
+                </button>
+              )}
+            </div>
 
             <article>
               {selectedNote.featured_image && (
@@ -231,6 +290,38 @@ const DevNotes = () => {
             )}
           </div>
 
+          {/* Project Filter Tabs */}
+          <div className="mb-8">
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSelectedProject('all')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  selectedProject === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                {language === 'ko' ? '전체' : language === 'ja' ? 'すべて' : 'All'}
+              </button>
+              {projects.map(project => (
+                <button
+                  key={project.id}
+                  onClick={() => setSelectedProject(project.id)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                    selectedProject === project.id
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {project.logo_url && (
+                    <img src={project.logo_url} alt={project.name_en} className="w-5 h-5" />
+                  )}
+                  {language === 'ko' ? project.name_ko : language === 'ja' ? project.name_ja : project.name_en}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid gap-8">
             {notes.map((note, index) => (
               <motion.article
@@ -253,6 +344,12 @@ const DevNotes = () => {
                   )}
                   <div className="p-6 flex-1">
                     <div className="flex items-center gap-2 mb-2">
+                      {note.project_id && (
+                        <span className="px-2 py-1 rounded bg-gray-700 text-xs text-gray-300">
+                          {projects.find(p => p.id === note.project_id)?.[`name_${language}`] || 
+                           projects.find(p => p.id === note.project_id)?.name_en}
+                        </span>
+                      )}
                       <span className={`px-2 py-1 rounded-full text-xs text-white ${getCategoryColor(note.category)}`}>
                         {note.category}
                       </span>

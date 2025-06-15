@@ -15,6 +15,9 @@ const CorporationNotice = lazy(() => import('./pages/CorporationNotice'));
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
 const WritePost = lazy(() => import('./pages/WritePost'));
+const News = lazy(() => import('./pages/News'));
+const NewsDetail = lazy(() => import('./pages/NewsDetail'));
+const EditPost = lazy(() => import('./pages/EditPost'));
 
 // Loading component
 const PageLoader = () => (
@@ -40,6 +43,9 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/write" element={<WritePost />} />
+              <Route path="/edit/:id" element={<EditPost />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/news/:slug" element={<NewsDetail />} />
             </Routes>
           </Suspense>
           <Footer />

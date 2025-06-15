@@ -20,6 +20,20 @@ interface TeamMember {
   avatar_url: string | null;
   sort_order: number;
   active: boolean;
+  projects?: ProjectAssignment[];
+}
+
+interface ProjectAssignment {
+  project_id: string;
+  role_in_project: string;
+  is_lead: boolean;
+  project: {
+    id: string;
+    slug: string;
+    name_ko: string;
+    name_en: string;
+    name_ja: string;
+  };
 }
 
 const Team = () => {
@@ -39,12 +53,38 @@ const Team = () => {
     try {
       const { data, error } = await supabase
         .from('team_members')
-        .select('*')
+        .select(`
+          *,
+          team_member_projects!inner(
+            project_id,
+            role_in_project,
+            is_lead,
+            projects!inner(
+              id,
+              slug,
+              name_ko,
+              name_en,
+              name_ja
+            )
+          )
+        `)
         .eq('active', true)
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setMembers(data || []);
+      
+      // Transform the data structure
+      const transformedData = (data || []).map(member => ({
+        ...member,
+        projects: member.team_member_projects?.map((tmp: any) => ({
+          project_id: tmp.project_id,
+          role_in_project: tmp.role_in_project,
+          is_lead: tmp.is_lead,
+          project: tmp.projects
+        })) || []
+      }));
+      
+      setMembers(transformedData);
     } catch (error) {
       console.error('Error fetching team members:', error);
     } finally {
@@ -159,7 +199,31 @@ const Team = () => {
                     </div>
                   )}
                   <h3 className="text-2xl font-bold mb-2">{member.name}</h3>
-                  <p className="text-gray-400 mb-4">{getRole(member)}</p>
+                  <p className="text-gray-400 mb-2">{getRole(member)}</p>
+                  
+                  {/* Project assignments */}
+                  {member.projects && member.projects.length > 0 && (
+                    <div className="mb-4 space-y-2">
+                      {member.projects.map((assignment) => (
+                        <div key={assignment.project_id} className="flex items-center justify-center gap-2">
+                          <span className="text-xs px-2 py-1 bg-gray-800 rounded">
+                            {language === 'ko' ? assignment.project.name_ko : 
+                             language === 'ja' ? assignment.project.name_ja : 
+                             assignment.project.name_en}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {assignment.role_in_project}
+                          </span>
+                          {assignment.is_lead && (
+                            <span className="text-xs px-2 py-1 bg-yellow-600/20 text-yellow-500 rounded">
+                              Lead
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
                   {getDescription(member) && (
                     <p className="text-gray-500 text-sm">{getDescription(member)}</p>
                   )}

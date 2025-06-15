@@ -1,4 +1,4 @@
-import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User, BookOpen, Shield, UserPlus } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User, BookOpen, Shield, UserPlus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -100,13 +100,22 @@ const Navbar = () => {
                     <span>{language === 'ko' ? '위키' : language === 'ja' ? 'Wiki' : 'Wiki'}</span>
                   </Link>
                   {isAdmin && (
-                    <Link
-                      to="/admin/users"
-                      className="flex items-center gap-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-lg font-medium transition-colors"
-                    >
-                      <Shield className="h-5 w-5" />
-                      <span>{language === 'ko' ? '관리' : language === 'ja' ? '管理' : 'Admin'}</span>
-                    </Link>
+                    <>
+                      <Link
+                        to="/admin/users"
+                        className="flex items-center gap-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-lg font-medium transition-colors"
+                      >
+                        <Shield className="h-5 w-5" />
+                        <span>{language === 'ko' ? '회원관리' : language === 'ja' ? 'ユーザー管理' : 'Users'}</span>
+                      </Link>
+                      <Link
+                        to="/admin/team"
+                        className="flex items-center gap-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-lg font-medium transition-colors"
+                      >
+                        <Users className="h-5 w-5" />
+                        <span>{language === 'ko' ? '팀관리' : language === 'ja' ? 'チーム管理' : 'Team'}</span>
+                      </Link>
+                    </>
                   )}
                 </>
               )}
@@ -195,14 +204,24 @@ const Navbar = () => {
                   {language === 'ko' ? '위키' : language === 'ja' ? 'Wiki' : 'Wiki'}
                 </Link>
                 {isAdmin && (
-                  <Link
-                    to="/admin/users"
-                    className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Shield className="h-5 w-5" />
-                    {language === 'ko' ? '관리' : language === 'ja' ? '管理' : 'Admin'}
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin/users"
+                      className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Shield className="h-5 w-5" />
+                      {language === 'ko' ? '회원관리' : language === 'ja' ? 'ユーザー管理' : 'Users'}
+                    </Link>
+                    <Link
+                      to="/admin/team"
+                      className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Users className="h-5 w-5" />
+                      {language === 'ko' ? '팀관리' : language === 'ja' ? 'チーム管理' : 'Team'}
+                    </Link>
+                  </>
                 )}
               </>
             )}

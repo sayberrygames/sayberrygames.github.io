@@ -11,6 +11,8 @@
     "update-browserslist": "npx update-browserslist-db@latest"
   },
   "dependencies": {
+    "@blocknote/core": "^0.31.2",
+    "@blocknote/react": "^0.31.2",
     "@supabase/supabase-js": "^2.50.0",
     "@uiw/react-md-editor": "^4.0.7",
     "framer-motion": "^11.0.8",

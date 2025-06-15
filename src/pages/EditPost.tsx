@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
-import MarkdownEditor from '../components/MarkdownEditor';
+import NotionEditor from '../components/NotionEditor';
 import MarkdownViewer from '../components/MarkdownViewer';
 import { Eye, Edit, Trash2 } from 'lucide-react';
 
@@ -546,9 +546,10 @@ const EditPost = () => {
                     <MarkdownViewer content={formData[`content_${activeTab}`]} />
                   </div>
                 ) : (
-                  <MarkdownEditor
-                    value={formData[`content_${activeTab}`]}
+                  <NotionEditor
+                    content={formData[`content_${activeTab}`]}
                     onChange={(value) => handleChange(`content_${activeTab}`, value || '')}
+                    placeholder={language === 'ko' ? '내용을 입력하세요... (/ 를 누르면 메뉴가 나타납니다)' : language === 'ja' ? 'コンテンツを入力... (/でメニュー表示)' : 'Type your content... (Press / for menu)'}
                     height={500}
                   />
                 )}

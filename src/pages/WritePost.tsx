@@ -4,9 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
-import MarkdownEditor from '../components/MarkdownEditor';
+import NotionEditor from '../components/NotionEditor';
 import MarkdownViewer from '../components/MarkdownViewer';
-import { Eye, Edit } from 'lucide-react';
+import { Eye, Edit, Info } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -42,7 +42,7 @@ const WritePost = () => {
     content_ja: '',
     date: new Date().toISOString().split('T')[0],
     category: postType === 'news' ? 'Announcement' : 'Development',
-    author: user?.email?.split('@')[0] || 'SayBerry Games',
+    author: user?.user_metadata?.name || user?.email?.split('@')[0] || 'SayBerry Games',
     featured_image: '',
     steam_link: '',
     tags: [] as string[],
@@ -50,10 +50,29 @@ const WritePost = () => {
     project_id: '',
   });
 
+  // Auto-generate slug from Korean title
+  const generateSlug = (title: string) => {
+    // Get current timestamp for uniqueness
+    const timestamp = Date.now().toString(36);
+    
+    // Try to romanize Korean or use as-is for English
+    const baseSlug = title
+      .toLowerCase()
+      .replace(/[가-힣]/g, '') // Remove Korean characters
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/--+/g, '-') // Replace multiple hyphens with single
+      .trim();
+    
+    // If no English characters remain, use timestamp only
+    return baseSlug || `post-${timestamp}`;
+  };
+
   const content = {
     ko: {
       title: postType === 'news' ? '뉴스 작성' : '개발 노트 작성',
-      slug: 'URL 슬러그 (영문, 숫자, 하이픈만)',
+      slug: 'URL 주소 (자동 생성됨)',
+      slugTooltip: '제목을 입력하면 자동으로 생성됩니다',
       titleLabel: '제목',
       excerptLabel: '요약 (선택사항)',
       contentLabel: '내용',
@@ -76,7 +95,8 @@ const WritePost = () => {
     },
     en: {
       title: postType === 'news' ? 'Write News' : 'Write Development Note',
-      slug: 'URL Slug (letters, numbers, hyphens only)',
+      slug: 'URL Address (auto-generated)',
+      slugTooltip: 'Automatically generated from title',
       titleLabel: 'Title',
       excerptLabel: 'Excerpt (Optional)',
       contentLabel: 'Content',
@@ -99,7 +119,8 @@ const WritePost = () => {
     },
     ja: {
       title: postType === 'news' ? 'ニュース作成' : '開発ノート作成',
-      slug: 'URLスラッグ（英数字とハイフンのみ）',
+      slug: 'URLアドレス（自動生成）',
+      slugTooltip: 'タイトルから自動的に生成されます',
       titleLabel: 'タイトル',
       excerptLabel: '要約（オプション）',
       contentLabel: '内容',
@@ -217,6 +238,15 @@ const WritePost = () => {
       ...prev,
       [field]: value,
     }));
+
+    // Auto-generate slug when Korean title changes
+    if (field === 'title_ko' && value) {
+      const newSlug = generateSlug(value);
+      setFormData(prev => ({
+        ...prev,
+        slug: newSlug,
+      }));
+    }
   };
 
   const categories = postType === 'news' 
@@ -237,14 +267,21 @@ const WritePost = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">{t.slug} *</label>
+                  <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                    {t.slug} *
+                    <div className="group relative">
+                      <Info className="h-4 w-4 text-gray-400 cursor-help" />
+                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-700 text-xs text-white p-2 rounded whitespace-nowrap">
+                        {t.slugTooltip}
+                      </div>
+                    </div>
+                  </label>
                   <input
                     type="text"
                     value={formData.slug}
-                    onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
-                    required
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
-                    pattern="[a-z0-9\-]+"
+                    readOnly
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-400 cursor-not-allowed"
+                    placeholder="제목을 먼저 입력하세요"
                   />
                 </div>
                 <div>
@@ -416,9 +453,10 @@ const WritePost = () => {
                     <MarkdownViewer content={formData[`content_${activeTab}`]} />
                   </div>
                 ) : (
-                  <MarkdownEditor
-                    value={formData[`content_${activeTab}`]}
-                    onChange={(value) => handleChange(`content_${activeTab}`, value || '')}
+                  <NotionEditor
+                    content={formData[`content_${activeTab}`]}
+                    onChange={(value) => handleChange(`content_${activeTab}`, value)}
+                    placeholder={language === 'ko' ? '내용을 입력하세요... (/ 를 누르면 메뉴가 나타납니다)' : 'Type your content... (Press / for menu)'}
                     height={500}
                   />
                 )}

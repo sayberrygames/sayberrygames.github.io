@@ -104,29 +104,48 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      // Use Supabase Management API to get all users
+      // Try to use Edge Function first
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) throw new Error('No session');
 
-      // Get the service role key from environment or use the admin's token
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users`, {
+      // Try Edge Function
+      let response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users`, {
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+          'Content-Type': 'application/json',
         }
       });
 
+      // If Edge Function fails, show warning
       if (!response.ok) {
-        // If admin token doesn't work, we'll need to use service role key
-        // For now, we'll show an error
-        throw new Error('Failed to fetch users');
+        console.warn('Edge Function not deployed. For production, deploy the admin-users function.');
+        
+        // For development only - DO NOT USE IN PRODUCTION
+        if (import.meta.env.DEV && import.meta.env.SUPABASE_SERVICE_KEY) {
+          console.warn('Using service key in development mode only!');
+          response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users`, {
+            headers: {
+              'Authorization': `Bearer ${import.meta.env.SUPABASE_SERVICE_KEY}`,
+              'apikey': import.meta.env.SUPABASE_SERVICE_KEY
+            }
+          });
+        } else {
+          throw new Error('Admin users function not available');
+        }
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', errorText);
+        throw new Error(`Failed to fetch users: ${response.status}`);
       }
 
       const data = await response.json();
       setUsers(data.users || []);
+      setError(''); // Clear any previous errors
     } catch (error) {
       console.error('Error fetching users:', error);
-      setError('Failed to fetch users. Admin privileges may be required.');
+      setError('Failed to fetch users. Please check configuration.');
       
       // Fallback: show current user at least
       if (user) {
@@ -134,7 +153,7 @@ const AdminUsers = () => {
           id: user.id,
           email: user.email || '',
           created_at: user.created_at,
-          user_metadata: user.user_metadata || {}
+          user_metadata: user.user_metadata || { role: 'user' }
         }]);
       }
     } finally {
@@ -156,14 +175,48 @@ const AdminUsers = () => {
     setMessage('');
 
     try {
-      const { error } = await supabase.auth.admin.updateUserById(userId, {
-        user_metadata: {
-          role: editRole,
-          name: editName
-        }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session');
+
+      // Try Edge Function first
+      let response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_metadata: {
+            role: editRole,
+            name: editName
+          }
+        })
       });
 
-      if (error) throw error;
+      // If Edge Function fails, use service key in dev mode only
+      if (!response.ok && import.meta.env.DEV && import.meta.env.SUPABASE_SERVICE_KEY) {
+        console.warn('Edge Function not available, using service key in dev mode');
+        response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.SUPABASE_SERVICE_KEY}`,
+            'apikey': import.meta.env.SUPABASE_SERVICE_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_metadata: {
+              role: editRole,
+              name: editName
+            }
+          })
+        });
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Update error:', errorText);
+        throw new Error(`Failed to update user: ${response.status}`);
+      }
 
       // Update local state
       setUsers(users.map(u => 
@@ -180,26 +233,6 @@ const AdminUsers = () => {
     } catch (error) {
       console.error('Error updating user:', error);
       setError(t.updateError);
-      
-      // Try alternative method using custom function
-      try {
-        const { error: fnError } = await supabase.functions.invoke('update-user-role', {
-          body: { userId, role: editRole, name: editName }
-        });
-        
-        if (!fnError) {
-          setUsers(users.map(u => 
-            u.id === userId 
-              ? { ...u, user_metadata: { ...u.user_metadata, role: editRole, name: editName } }
-              : u
-          ));
-          setEditingUser(null);
-          setMessage(t.updateSuccess);
-          setTimeout(() => setMessage(''), 3000);
-        }
-      } catch (fnError) {
-        console.error('Alternative method also failed:', fnError);
-      }
     }
   };
 

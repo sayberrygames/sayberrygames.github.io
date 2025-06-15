@@ -4,9 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
-import MarkdownEditor from '../components/MarkdownEditor';
+import NotionEditor from '../components/NotionEditor';
 import MarkdownViewer from '../components/MarkdownViewer';
-import { Eye, Edit, Save, X, Globe, Lock, AlertCircle } from 'lucide-react';
+import { Eye, Edit, Save, X, Globe, Lock, AlertCircle, Info } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -54,7 +54,8 @@ const WikiEditor = () => {
       newPage: '새 위키 페이지',
       editPage: '위키 페이지 편집',
       title: '제목',
-      slug: 'URL 슬러그',
+      slug: 'URL 주소 (자동 생성됨)',
+      slugTooltip: '제목을 입력하면 자동으로 생성됩니다',
       content: '내용',
       project: '프로젝트',
       selectProject: '프로젝트 선택 (선택사항)',
@@ -74,7 +75,8 @@ const WikiEditor = () => {
       newPage: 'New Wiki Page',
       editPage: 'Edit Wiki Page',
       title: 'Title',
-      slug: 'URL Slug',
+      slug: 'URL Address (auto-generated)',
+      slugTooltip: 'Automatically generated from title',
       content: 'Content',
       project: 'Project',
       selectProject: 'Select Project (Optional)',
@@ -94,7 +96,8 @@ const WikiEditor = () => {
       newPage: '新しいWikiページ',
       editPage: 'Wikiページを編集',
       title: 'タイトル',
-      slug: 'URLスラッグ',
+      slug: 'URLアドレス（自動生成）',
+      slugTooltip: 'タイトルから自動的に生成されます',
       content: '内容',
       project: 'プロジェクト',
       selectProject: 'プロジェクトを選択（オプション）',
@@ -215,7 +218,7 @@ const WikiEditor = () => {
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
-    if (!isEditMode && !slugValue) {
+    if (!isEditMode) {
       setSlugValue(generateSlug(value));
     }
   };
@@ -328,14 +331,21 @@ const WikiEditor = () => {
             {/* Slug (only for new pages) */}
             {!isEditMode && (
               <div>
-                <label className="block text-sm font-medium mb-2">{t.slug} *</label>
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                  {t.slug} *
+                  <div className="group relative">
+                    <Info className="h-4 w-4 text-gray-400 cursor-help" />
+                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-700 text-xs text-white p-2 rounded whitespace-nowrap">
+                      {t.slugTooltip}
+                    </div>
+                  </div>
+                </label>
                 <input
                   type="text"
                   value={slugValue}
-                  onChange={(e) => setSlugValue(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:border-blue-500 focus:outline-none"
-                  pattern="[a-z0-9-]+"
-                  required
+                  readOnly
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-400 cursor-not-allowed"
+                  placeholder="제목을 먼저 입력하세요"
                 />
               </div>
             )}
@@ -418,9 +428,10 @@ const WikiEditor = () => {
                   <MarkdownViewer content={content} />
                 </div>
               ) : (
-                <MarkdownEditor
-                  value={content}
+                <NotionEditor
+                  content={content}
                   onChange={setContent}
+                  placeholder={language === 'ko' ? '내용을 입력하세요... (/ 를 누르면 메뉴가 나타납니다)' : language === 'ja' ? 'コンテンツを入力... (/でメニュー表示)' : 'Type your content... (Press / for menu)'}
                   height={400}
                 />
               )}

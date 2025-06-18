@@ -220,7 +220,9 @@ const Team = () => {
                              assignment.project.name_en}
                           </span>
                           <span className="text-xs text-gray-500">
-                            {assignment.role_in_project}
+                            {language === 'ko' ? assignment.role_ko : 
+                             language === 'ja' ? assignment.role_ja : 
+                             assignment.role_en}
                           </span>
                           {assignment.is_lead && (
                             <span className="text-xs px-2 py-1 bg-yellow-600/20 text-yellow-500 rounded">

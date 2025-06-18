@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
-import { Save, X, AlertCircle, User, Calendar, Image, Link as LinkIcon } from 'lucide-react';
+import { Save, X, AlertCircle, User, Calendar, Image, Link as LinkIcon, Plus, Trash2 } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -22,6 +22,21 @@ interface TeamMember {
   updated_at: string;
 }
 
+interface Project {
+  id: string;
+  name_ko: string;
+  name_en: string;
+  name_ja: string;
+}
+
+interface ProjectAssignment {
+  project_id: string;
+  role_ko: string;
+  role_en: string;
+  role_ja: string;
+  is_lead: boolean;
+}
+
 const EditTeamMember = () => {
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useAuth();
@@ -30,6 +45,8 @@ const EditTeamMember = () => {
 
   const [member, setMember] = useState<TeamMember | null>(null);
   const [formData, setFormData] = useState<Partial<TeamMember>>({});
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectAssignments, setProjectAssignments] = useState<ProjectAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -53,7 +70,13 @@ const EditTeamMember = () => {
       roleJa: '일본어 역할',
       descriptionKo: '한국어 소개',
       descriptionEn: '영어 소개',
-      descriptionJa: '일본어 소개'
+      descriptionJa: '일본어 소개',
+      projectAssignments: '프로젝트 할당',
+      project: '프로젝트',
+      projectRole: '역할',
+      isLead: '리드',
+      addProject: '프로젝트 추가',
+      removeProject: '제거'
     },
     en: {
       title: 'Edit Team Member',
@@ -73,7 +96,13 @@ const EditTeamMember = () => {
       roleJa: 'Japanese Role',
       descriptionKo: 'Korean Description',
       descriptionEn: 'English Description',
-      descriptionJa: 'Japanese Description'
+      descriptionJa: 'Japanese Description',
+      projectAssignments: 'Project Assignments',
+      project: 'Project',
+      projectRole: 'Role',
+      isLead: 'Lead',
+      addProject: 'Add Project',
+      removeProject: 'Remove'
     },
     ja: {
       title: 'チームメンバー編集',
@@ -93,7 +122,13 @@ const EditTeamMember = () => {
       roleJa: '日本語役割',
       descriptionKo: '韓国語紹介',
       descriptionEn: '英語紹介',
-      descriptionJa: '日本語紹介'
+      descriptionJa: '日本語紹介',
+      projectAssignments: 'プロジェクト割り当て',
+      project: 'プロジェクト',
+      projectRole: '役割',
+      isLead: 'リード',
+      addProject: 'プロジェクト追加',
+      removeProject: '削除'
     }
   };
 
@@ -112,18 +147,37 @@ const EditTeamMember = () => {
 
   const fetchMember = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch team member
+      const { data: memberData, error: memberError } = await supabase
         .from('team_members')
         .select('*')
         .eq('id', id)
         .single();
       
-      if (error) throw error;
+      if (memberError) throw memberError;
       
-      setMember(data);
-      setFormData(data);
+      // Fetch all projects
+      const { data: projectsData, error: projectsError } = await supabase
+        .from('projects')
+        .select('*')
+        .order('name_ko');
+      
+      if (projectsError) throw projectsError;
+      
+      // Fetch member's project assignments
+      const { data: assignmentsData, error: assignmentsError } = await supabase
+        .from('team_member_projects')
+        .select('*')
+        .eq('team_member_id', id);
+      
+      if (assignmentsError) throw assignmentsError;
+      
+      setMember(memberData);
+      setFormData(memberData);
+      setProjects(projectsData || []);
+      setProjectAssignments(assignmentsData || []);
     } catch (error) {
-      console.error('Error fetching team member:', error);
+      console.error('Error fetching data:', error);
       setError(t.loadError);
     } finally {
       setLoading(false);
@@ -155,6 +209,34 @@ const EditTeamMember = () => {
         throw error;
       }
 
+      // Update project assignments
+      // First, delete all existing assignments
+      await supabase
+        .from('team_member_projects')
+        .delete()
+        .eq('team_member_id', id);
+
+      // Then insert new assignments
+      if (projectAssignments.length > 0) {
+        const assignmentsToInsert = projectAssignments.map(assignment => ({
+          team_member_id: id,
+          project_id: assignment.project_id,
+          role_ko: assignment.role_ko,
+          role_en: assignment.role_en,
+          role_ja: assignment.role_ja,
+          is_lead: assignment.is_lead
+        }));
+
+        const { error: assignmentError } = await supabase
+          .from('team_member_projects')
+          .insert(assignmentsToInsert);
+
+        if (assignmentError) {
+          console.error('Error updating project assignments:', assignmentError);
+          throw assignmentError;
+        }
+      }
+
       console.log('Update successful:', data);
       navigate('/team');
     } catch (error: any) {
@@ -170,6 +252,26 @@ const EditTeamMember = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleProjectAssignmentChange = (index: number, field: string, value: any) => {
+    const updated = [...projectAssignments];
+    updated[index] = { ...updated[index], [field]: value };
+    setProjectAssignments(updated);
+  };
+
+  const addProjectAssignment = () => {
+    setProjectAssignments([...projectAssignments, {
+      project_id: '',
+      role_ko: '',
+      role_en: '',
+      role_ja: '',
+      is_lead: false
+    }]);
+  };
+
+  const removeProjectAssignment = (index: number) => {
+    setProjectAssignments(projectAssignments.filter((_, i) => i !== index));
   };
 
 
@@ -326,6 +428,111 @@ const EditTeamMember = () => {
                     rows={3}
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Project Assignments */}
+            <div className="bg-gray-900 rounded-lg p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold">{t.projectAssignments}</h3>
+                <button
+                  type="button"
+                  onClick={addProjectAssignment}
+                  className="flex items-center gap-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  {t.addProject}
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {projectAssignments.map((assignment, index) => (
+                  <div key={index} className="border border-gray-700 rounded p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <h4 className="text-sm font-medium">{t.project} #{index + 1}</h4>
+                      <button
+                        type="button"
+                        onClick={() => removeProjectAssignment(index)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium mb-1">{t.project}</label>
+                        <select
+                          value={assignment.project_id}
+                          onChange={(e) => handleProjectAssignmentChange(index, 'project_id', e.target.value)}
+                          className="w-full px-3 py-1 bg-gray-800 border border-gray-700 rounded text-sm"
+                        >
+                          <option value="">선택하세요</option>
+                          {projects.map(project => (
+                            <option key={project.id} value={project.id}>
+                              {language === 'ko' ? project.name_ko : 
+                               language === 'ja' ? project.name_ja : 
+                               project.name_en}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="flex items-end gap-3">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={assignment.is_lead}
+                            onChange={(e) => handleProjectAssignmentChange(index, 'is_lead', e.target.checked)}
+                            className="w-4 h-4"
+                          />
+                          <span className="text-sm">{t.isLead}</span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                      <div>
+                        <label className="block text-xs font-medium mb-1">{t.roleKo}</label>
+                        <input
+                          type="text"
+                          value={assignment.role_ko}
+                          onChange={(e) => handleProjectAssignmentChange(index, 'role_ko', e.target.value)}
+                          className="w-full px-3 py-1 bg-gray-800 border border-gray-700 rounded text-sm"
+                          placeholder="예: 클라이언트 개발"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium mb-1">{t.roleEn}</label>
+                        <input
+                          type="text"
+                          value={assignment.role_en}
+                          onChange={(e) => handleProjectAssignmentChange(index, 'role_en', e.target.value)}
+                          className="w-full px-3 py-1 bg-gray-800 border border-gray-700 rounded text-sm"
+                          placeholder="e.g. Client Developer"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium mb-1">{t.roleJa}</label>
+                        <input
+                          type="text"
+                          value={assignment.role_ja}
+                          onChange={(e) => handleProjectAssignmentChange(index, 'role_ja', e.target.value)}
+                          className="w-full px-3 py-1 bg-gray-800 border border-gray-700 rounded text-sm"
+                          placeholder="例: クライアント開発"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {projectAssignments.length === 0 && (
+                  <p className="text-gray-500 text-sm text-center py-4">
+                    {language === 'ko' ? '프로젝트 할당이 없습니다.' : 
+                     language === 'ja' ? 'プロジェクト割り当てがありません。' : 
+                     'No project assignments.'}
+                  </p>
+                )}
               </div>
             </div>
 

@@ -58,6 +58,9 @@ const Team = () => {
           team_member_projects!inner(
             project_id,
             role_in_project,
+            role_ko,
+            role_en,
+            role_ja,
             is_lead,
             projects!inner(
               id,
@@ -79,6 +82,9 @@ const Team = () => {
         projects: member.team_member_projects?.map((tmp: any) => ({
           project_id: tmp.project_id,
           role_in_project: tmp.role_in_project,
+          role_ko: tmp.role_ko,
+          role_en: tmp.role_en,
+          role_ja: tmp.role_ja,
           is_lead: tmp.is_lead,
           project: tmp.projects
         })) || []

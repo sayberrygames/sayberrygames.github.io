@@ -136,17 +136,30 @@ const EditTeamMember = () => {
     setError('');
 
     try {
-      const { error } = await supabase
+      // Remove fields that shouldn't be updated
+      const updateData = { ...formData };
+      delete updateData.id;
+      delete updateData.created_at;
+      delete updateData.updated_at;
+
+      console.log('Updating team member with data:', updateData);
+
+      const { data, error } = await supabase
         .from('team_members')
-        .update(formData)
-        .eq('id', id);
+        .update(updateData)
+        .eq('id', id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
+      }
 
+      console.log('Update successful:', data);
       navigate('/team');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating team member:', error);
-      setError(t.saveError);
+      setError(`${t.saveError} ${error.message || ''}`);
     } finally {
       setSaving(false);
     }

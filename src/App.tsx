@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { usePageTracking } from './hooks/usePageTracking';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -23,6 +24,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminTeam = lazy(() => import('./pages/AdminTeam'));
 const EditTeamMember = lazy(() => import('./pages/EditTeamMember'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Wiki = lazy(() => import('./pages/Wiki'));
 const WikiPage = lazy(() => import('./pages/WikiPage'));
 const WikiEditor = lazy(() => import('./pages/WikiEditor'));
@@ -34,11 +36,11 @@ const PageLoader = () => (
   </div>
 );
 
-export default function App() {
+function AppContent() {
+  usePageTracking();
+  
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
           <Navbar />
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -56,6 +58,7 @@ export default function App() {
               <Route path="/news/:slug" element={<NewsDetail />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/team" element={<AdminTeam />} />
               <Route path="/admin/team/edit/:id" element={<EditTeamMember />} />
@@ -67,6 +70,14 @@ export default function App() {
           </Suspense>
           <Footer />
         </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AuthProvider>
+        <AppContent />
       </AuthProvider>
     </LanguageProvider>
   );

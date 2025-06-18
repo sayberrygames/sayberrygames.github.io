@@ -1,4 +1,4 @@
-import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User, BookOpen, Shield, UserPlus } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, LogIn, LogOut, User, BookOpen, Shield, UserPlus, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -195,14 +195,24 @@ const Navbar = () => {
                   {language === 'ko' ? '위키' : language === 'ja' ? 'Wiki' : 'Wiki'}
                 </Link>
                 {isAdmin && (
-                  <Link
-                    to="/admin/users"
-                    className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Shield className="h-5 w-5" />
-                    {language === 'ko' ? '관리' : language === 'ja' ? '管理' : 'Admin'}
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin/dashboard"
+                      className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <BarChart3 className="h-5 w-5" />
+                      {language === 'ko' ? '대시보드' : language === 'ja' ? 'ダッシュボード' : 'Dashboard'}
+                    </Link>
+                    <Link
+                      to="/admin/users"
+                      className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-xl font-medium flex items-center gap-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Shield className="h-5 w-5" />
+                      {language === 'ko' ? '관리' : language === 'ja' ? '管理' : 'Admin'}
+                    </Link>
+                  </>
                 )}
               </>
             )}
